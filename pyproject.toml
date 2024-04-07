@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "optimummealgenerator"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Django = "^5.0.4"
+wearipedia = "^0.1.2"
+openpyxl = "^3.1.2"
+seaborn = "^0.13.2"
+matplotlib = "^3.8.4"
+scikit-learn = "^1.4.1.post1"
+xgboost = "^2.0.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
