@@ -24,7 +24,7 @@ def add_goal(request):
     
 def list_user_health_goals(request):
     # get the current users health goals 
-    user_health_goals = HealthGoal.objects.filter(user=request.user)
+    user_health_goals = UserHealthGoal.objects.filter(user=request.user)
 
     # pass to template 
     return render(request, 'list_user_health_goals.html', {'health_goals' : health_goals})
