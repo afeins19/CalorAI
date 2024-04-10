@@ -1,0 +1,30 @@
+<!-- templates/login.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Login</h2>
+    <form method="post" class="form-login">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Login</button>
+
+        <!-- a href="{% url 'password_reset' %}" class="btn btn-link">Forgot password?</a> -->
+
+    </form>
+    <p>New to CalorAI? <a href="{% url 'signup' %}">Register here!</a>.</p>
+</div>
+{% endblock %}

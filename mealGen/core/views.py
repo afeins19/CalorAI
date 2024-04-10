@@ -1,8 +1,33 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import HealthGoalForm
 from .models import UserHealthGoal
 
+from django.contrib.auth.views import LoginView
+from .forms import LoginForm, SignUpForm
+from django.contrib.auth import login, authenticate
+
 # Create your views here.
+
+
+def home(request):
+    # homepage 
+    return render(request, 'core/home.html')
+
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('home')  # Redirect to a home page or other page
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
 
 def add_goal(request):
     # 

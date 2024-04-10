@@ -2,8 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from cryptography.fernet import Fernet # handling password encryption
-from dotenv import load_dotenv, set_key
-from mealGen.env_generator import generate_key_and_update_env
+# from dotenv import load_dotenv, set_key
+#from env_generator import generate_key_and_update_env
 
 import os 
 
@@ -55,10 +55,10 @@ class UserHealthData(models.Model):
 class UserHealthGoal(models.Model):
     """User defined fitness attributes"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    current_weight = models.IntegerField(max_length=100)
-    target_weight = models.IntegerField(max_length=100)
+    current_weight = models.IntegerField()
+    target_weight = models.IntegerField()
     start_date = models.DateField()
-    end_data = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         if self.current_weight and self.target_weight:
@@ -73,6 +73,8 @@ class UserHealthGoal(models.Model):
 
         else:
             return f"{self.user.username} has no health goals yet."
+        
+
 
 
 

@@ -1,5 +1,5 @@
 from cryptography.fernet import Fernet
-from dotenv import load_dotenv, set_key
+# from dotenv import load_dotenv, set_key
 import os
 
 def generate_key_and_update_env(env_path='.env', key_name='ENCRYPTION_KEY'):

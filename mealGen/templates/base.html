@@ -14,11 +14,15 @@
 
 <body>
 
-    <header>
-
-        {% include 'navbar.html' %}
-
-    </header>
+        <nav>
+            <!-- {% if user.is_authenticated %} -->
+            <!-- <p>Welcome, {{ user.username }}!</p> -->
+            <!-- <a href="{% url 'logout' %}">Logout</a> -->
+            <!-- {% else %} -->
+            <!--<a href="{% url 'login' %}">Login</a>-->
+            <!-- <a href="{% url 'signup' %}">Register</a> -->
+            <!-- {% endif %}-->
+        </nav>
 
     <main>
 
@@ -30,7 +34,7 @@
 
     <footer>
 
-        {% include 'footer.html' %}
+
 
     </footer>
 

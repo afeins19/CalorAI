@@ -1,5 +1,16 @@
 # OptimumMealGenerator
-given a users MyFitnesspal data. This program will filter through all meals that the user consumed throught the day and create the optimum breakfast, lunch, and dinners given the users fitness goals. This project will make use of machine learning algorithms to find the best food pairings in to meet macro requirements. 
+given a users MyFitnesspal data. This program will apply machine learning to a users eating habits and food choices to try to predict calorie intake based on those metrics. This will allow the model to inform the user about which of his or her particular dietary habits contribute most to his or her daily calorie goals. 
+
+### Target Variable 
+The target variable which our model will predict is the users's total daily caloric intake. 
+
+### Features 
+the model will gather the following data from the user's MyFitnessPal account and will then process it for use in the model. We will be using the following features to train the model: 
+- Food Type (fruit, vegetable, grain, protein. other)
+- Calorie Percentage of Meal Type Out of Daily Calorie Count 
+- Average Time Between Meals (on a given day)
+- Time of day that meals are consumed (in hourly increments)
+- Macro-nutrients (protein, carbs, fat)
 
  Structure
 1. Core App
