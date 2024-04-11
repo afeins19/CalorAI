@@ -17,11 +17,11 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from core.views import home, signup
+from core.views import home, signup, login, add_mfp_credentials, add_goal
 
 
 from django.contrib.auth.views import LoginView
-from core.forms import LoginForm
+from core.forms import LoginForm, UserAPICredentialsForm
 from django.urls import path, include
 
 
@@ -34,6 +34,6 @@ urlpatterns = [
     path('login/', LoginView.as_view(authentication_form=LoginForm), name='login'), # login path 
     path('signup/', signup, name='signup'),
     path('accounts/', include('django.contrib.auth.urls')),  # includes auth-related URLs
-
+    path('add_mfp_credentials/', add_mfp_credentials, name='mfp_credentials')
 
 ]

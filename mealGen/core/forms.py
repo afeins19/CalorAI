@@ -23,5 +23,13 @@ class HealthGoalForm(forms.ModelForm):
         model = UserHealthGoal
         fields = ['current_weight', 'target_weight', 'start_date', 'end_date']
 
+from .models import UserAPICredentials
 
+class UserAPICredentialsForm(forms.ModelForm):
+    # lets the user input their MFP credentials 
+    password = forms.CharField(widget=forms.PasswordInput(), label="Password")
+
+    class Meta:
+        model = UserAPICredentials
+        fields = ['email', 'username']
 

@@ -6,13 +6,15 @@ from django.contrib.auth.views import LoginView
 from .forms import LoginForm, SignUpForm
 from django.contrib.auth import login, authenticate
 
+from .forms import UserAPICredentialsForm
+from .models import UserAPICredentials
+
 # Create your views here.
 
 
 def home(request):
     # homepage 
     return render(request, 'core/home.html')
-
 
 
 def signup(request):
@@ -46,7 +48,23 @@ def add_goal(request):
         else: 
             form = HealthGoalForm()
         return render(request, 'add_goal.html', {'form' : form})
-    
+
+def add_mfp_credentials(request):
+    if request.method == 'POST':
+        form = UserAPICredentialsForm(request.POST)
+        
+        if form.is_valid():
+            mfp_credentials = form.save(commit=False) # holds data in memory but doesn save so we can link our app user
+            mfp_credentials.user = request.user 
+            mfp_credentials.password = form.cleaned_data['password'] # set encrypted password
+            mfp_credentials.save()
+            return redirect('home')
+    else:
+        form = UserAPICrendialsForm() # return blank form 
+
+    return render(request, 'mfp_credntials.html', {'form' : form}) 
+
+
 def list_user_health_goals(request):
     # get the current users health goals 
     user_health_goals = UserHealthGoal.objects.filter(user=request.user)

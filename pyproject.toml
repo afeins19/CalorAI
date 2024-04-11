@@ -5,7 +5,9 @@ description = ""
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
-[tool.poetry.dependencies]
+package-mode = false
+
+[tool.poetry.dependencies]  
 python = "^3.10"
 Django = "^5.0.4"
 wearipedia = "^0.1.2"
