@@ -58,11 +58,11 @@ def add_mfp_credentials(request):
             mfp_credentials.user = request.user 
             mfp_credentials.password = form.cleaned_data['password'] # set encrypted password
             mfp_credentials.save()
-            return redirect('home')
+            return redirect('')
     else:
-        form = UserAPICrendialsForm() # return blank form 
+        form = UserAPICredentialsForm() # return blank form 
 
-    return render(request, 'mfp_credntials.html', {'form' : form}) 
+    return render(request, 'core/add_mfp_credentials.html', {'form' : form}) 
 
 
 def list_user_health_goals(request):

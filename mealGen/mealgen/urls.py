@@ -34,6 +34,6 @@ urlpatterns = [
     path('login/', LoginView.as_view(authentication_form=LoginForm), name='login'), # login path 
     path('signup/', signup, name='signup'),
     path('accounts/', include('django.contrib.auth.urls')),  # includes auth-related URLs
-    path('add_mfp_credentials/', add_mfp_credentials, name='mfp_credentials')
+    path('add_mfp_credentials/', add_mfp_credentials, name='add_mfp_credentials')
 
 ]
