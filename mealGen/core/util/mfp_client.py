@@ -1,8 +1,23 @@
 import http.cookiejar as cookiejar
 import json
 import browsercookie
-import wearipedia  # Make sure this module is properly documented as it's not a standard library
-from . import clean_data
+import wearipedia  
+from selenium import webdriver 
+
+# formatting timestamps to work with JSON 
+
+def datacleanup(data):
+  res = []
+  for d in data:
+    if 'date' in d:
+      d['date'] = str(d['date'])
+    if type(d)==list:
+      if 'day' in d[0]:
+        d[0]['day'] = str(d[0]['day'])
+      if 'date' in d[0]:
+        d[0]['date'] = str(d[0]['date'])
+    res.append(d)
+  return res
 
 class MfpClient:
     def __init__(self) -> None:
@@ -20,11 +35,22 @@ class MfpClient:
             raise Exception("Failed to authenticate device")
         self.data = None
 
+    def get_webdriver():
+        pass
+
     def download_cookies(self):
         # getting the users cookies 
         try:
-            cookies = browsercookie.load()
+            driver = webdriver.Firefox()
+            driver.get("https://www.myfitnesspal.com")
+            
+            cookies = driver.get_cookies()
             cookie_list = []
+
+            # testing cookie retrieval
+            print(f"Cookies: {cookies}")
+
+            driver.quite()
 
             for cookie in cookies:
                 cookie_dict = cookie.__dict__
@@ -55,6 +81,9 @@ class MfpClient:
         # use cookies to estabblish connection between virtual device and mfp 
         try:
             device = wearipedia.get_device("myfitnesspal/myfitnesspal")
+            if not device:
+                print("Device Retrieval Failed - No Device")
+                return None
             device.authenticate({'cookies': self.jar})
             return device
         except Exception as e:
@@ -84,3 +113,44 @@ class MfpClient:
                 json.dump(self.data, f)
         except Exception as e:
             print(f"Error exporting data: {e}")
+
+
+# test the module functionality if we run just this module 
+if __name__ == '__main__':
+    # Create an instance of the MfpClient
+    mfp_client = MfpClient()
+
+    # Example parameters for testing - adjust these as necessary
+    start_date = "2024-01-01"
+    end_date = "2024-01-31"
+
+    try:
+        # Test downloading cookies (assuming this should normally be run first)
+        mfp_client.download_cookies()
+        print("Cookies downloaded successfully.")
+
+        # Set cookies from the downloaded data
+        mfp_client.set_cookies()
+        print("Cookies are set successfully.")
+
+        # Authenticate device or session based on cookies
+        device = mfp_client.make_and_auth_device()
+        if device:
+            print("Device authenticated successfully.")
+        
+        # Fetch some data with the MfpClient
+        mfp_client.get_data(start_date, end_date)
+        print("Data fetched successfully.")
+        print("Fetched data:", mfp_client.data)
+
+        # Clean the data
+        cleaned_data = mfp_client.clean_data()
+        print("Data cleaned successfully.")
+        print("Cleaned data:", cleaned_data)
+
+        # Optionally export the data
+        mfp_client.export()
+        print("Data exported successfully.")
+
+    except Exception as e:
+        print("An error occurred:", str(e))
