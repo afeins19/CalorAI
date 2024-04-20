@@ -17,12 +17,14 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from core.views import home, signup, login, add_mfp_credentials, add_goal
-
-
 from django.contrib.auth.views import LoginView
-from core.forms import LoginForm, UserAPICredentialsForm
 from django.urls import path, include
+
+from core.views import home, signup, login, add_mfp_credentials, add_goal
+from core.forms import LoginForm, UserAPICredentialsForm
+
+from dailylog.forms import DailyLogform
+from dailylog.views import add_dail_log, daily_log_success
 
 
 urlpatterns = [
@@ -34,6 +36,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(authentication_form=LoginForm), name='login'), # login path 
     path('signup/', signup, name='signup'),
     path('accounts/', include('django.contrib.auth.urls')),  # includes auth-related URLs
-    path('add_mfp_credentials/', add_mfp_credentials, name='add_mfp_credentials')
-
+    path('add_mfp_credentials/', add_mfp_credentials, name='add_mfp_credentials'),
+    path('add/', add_dail_log, name='add_daily_log'),
+    path('success/', daily_log_success, name='daily_log_sucesss'),
 ]
