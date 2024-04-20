@@ -75,6 +75,8 @@ class UserHealthGoal(models.Model):
             return f"{self.user.username} has no health goals yet."
         
 
+        
+
 
 
 

@@ -5,7 +5,8 @@ given a users MyFitnesspal data. This program will apply machine learning to a u
 The target variable which our model will predict is the users's total daily caloric intake. 
 
 ### Features 
-the model will gather the following data from the user's MyFitnessPal account and will then process it for use in the model. We will be using the following features to train the model: 
+the model will gather the following data from the user's MyFitnessPal account and will then process it for use in the model. We will be using the following features to train the model:
+
 - Food Type (fruit, vegetable, grain, protein. other)
 - Calorie Percentage of Meal Type Out of Daily Calorie Count 
 - Average Time Between Meals (on a given day)
@@ -48,4 +49,3 @@ the model will gather the following data from the user's MyFitnessPal account an
 
     Templates: Django templates for the frontend.
     Static Files: CSS, JavaScript, and other static files.
-
