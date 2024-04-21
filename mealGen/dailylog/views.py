@@ -5,7 +5,7 @@ from .forms import DailyLogform
 # Create your views here.
 
 @login_required # requires user to be logged in for this to work
-def add_dail_log(request):
+def add_daily_log(request):
     if request.method == 'POST': # user submits a filled out form 
         form = DailyLogform(request.POST)
 
@@ -16,10 +16,10 @@ def add_dail_log(request):
 
             return redirect('daily_log_success') # redirect to a page to notify user of successful log operation 
         
-        else:
-            form = DailyLogform() # prepare an empty DailyLogForm() for the user 
-
+    else:
+        form = DailyLogform() # prepare an empty DailyLogForm() for the user 
         return render(request, 'dailylog/add_daily_log.html', {'form' : form})
+        
 
 def daily_log_success(request):
     return render(request, 'dailylog/log_success.html')

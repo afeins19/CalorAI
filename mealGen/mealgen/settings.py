@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
     # custom apps 
     "core", 
+    "dailylog",
 ]
 
 MIDDLEWARE = [

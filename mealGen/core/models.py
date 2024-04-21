@@ -55,6 +55,7 @@ class UserHealthData(models.Model):
 class UserHealthGoal(models.Model):
     """User defined fitness attributes"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    daily_calorie_goal = models.IntegerField(help_text="Daily Calorie Goal (log entries within 5 percent of this goal will count)")
     current_weight = models.IntegerField()
     target_weight = models.IntegerField()
     start_date = models.DateField()

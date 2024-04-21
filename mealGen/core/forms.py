@@ -3,6 +3,7 @@ from .models import UserHealthData, UserHealthGoal
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import UserAPICredentials
 
 class SignUpForm(UserCreationForm):
     # signing in the form 
@@ -21,9 +22,8 @@ class LoginForm(AuthenticationForm):
 class HealthGoalForm(forms.ModelForm):
     class Meta:
         model = UserHealthGoal
-        fields = ['current_weight', 'target_weight', 'start_date', 'end_date']
+        fields = ['current_weight', 'target_weight', 'daily_calorie_goal', 'start_date', 'end_date']
 
-from .models import UserAPICredentials
 
 class UserAPICredentialsForm(forms.ModelForm):
     # lets the user input their MFP credentials 

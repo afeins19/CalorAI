@@ -24,7 +24,7 @@ from core.views import home, signup, login, add_mfp_credentials, add_goal
 from core.forms import LoginForm, UserAPICredentialsForm
 
 from dailylog.forms import DailyLogform
-from dailylog.views import add_dail_log, daily_log_success
+from dailylog.views import add_daily_log, daily_log_success
 
 
 urlpatterns = [
@@ -32,11 +32,10 @@ urlpatterns = [
 
     # custom paths 
     path('', home, name='home' ), # home page path 
-    
     path('login/', LoginView.as_view(authentication_form=LoginForm), name='login'), # login path 
     path('signup/', signup, name='signup'),
     path('accounts/', include('django.contrib.auth.urls')),  # includes auth-related URLs
     path('add_mfp_credentials/', add_mfp_credentials, name='add_mfp_credentials'),
-    path('add/', add_dail_log, name='add_daily_log'),
+    path('add/', add_daily_log, name='add_daily_log'),
     path('success/', daily_log_success, name='daily_log_sucesss'),
 ]

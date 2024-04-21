@@ -42,11 +42,12 @@ def add_goal(request):
             goal.save()
             
             # @TODO RETURN USER TO SOMEWHERE 
-            # return redirect()
+            return render(request, '') # back to home page 
 
         # user is requesting to fill out the HealthGoalForm 
         else: 
             form = HealthGoalForm()
+        
         return render(request, 'add_goal.html', {'form' : form})
 
 def add_mfp_credentials(request):

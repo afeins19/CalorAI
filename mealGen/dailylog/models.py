@@ -45,6 +45,11 @@ class DailyLog(models.Model):
     def average_time_between_meals(self): 
         #@TODO: Compute time between each meal (consider skipped meals too )
         pass
+    
+    @property 
+    def is_goal_met(self):
+        # returns a true if the user met calorie goals, and false if not (within specified range)
+        calorie_goal = self.user
 
     def __str__(self):
         return f"{self.user.username}'s log for {self.date}"
