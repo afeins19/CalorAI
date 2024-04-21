@@ -1,6 +1,5 @@
 # OptimumMealGenerator
-given a users MyFitnesspal data. This program will apply machine learning to a users eating habits and food choices to try to predict calorie intake based on those metrics. This will allow the model to inform the user about which of his or her particular dietary habits contribute most to his or her daily calorie goals. 
-
+given a users daily food-log data. This program will analyze trends between the data within a history of the user health logs and determine if there are any correlations between them and the user not meeting their desired health goals.
 ### Target Variable 
 The target variable which our model will predict is the users's total daily caloric intake. 
 
