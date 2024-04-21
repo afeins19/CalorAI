@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User 
 from datetime import timedelta, date 
 import random 
-from dailylog import DailyLog
+from dailylog.models import DailyLog
 
 class Command(BaseCommand): 
     help = "Generates a specified number of daily logs for a valid user. [python manage.py generate_daily_logs <username> <No. days to generate>]"

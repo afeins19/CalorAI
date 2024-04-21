@@ -26,7 +26,7 @@ class DailyLog(models.Model):
     dinner_protein = models.IntegerField(default=0)
 
     # meal times 
-    breakfast_time = models.TimeField(null=True, blank=True) # null lets us skip mea
+    breakfast_time = models.TimeField(null=True, blank=True) # null lets us skip meals
     lunch_time = models.TimeField(null=True, blank=True)
     dinner_time = models.TimeField(null=True, blank=True)
 
@@ -43,8 +43,30 @@ class DailyLog(models.Model):
         return self.breakfast_protein + self. lunch_protein + self.dinner_protein
     
     def average_time_between_meals(self): 
-        #@TODO: Compute time between each meal (consider skipped meals too )
-        pass
+        log_times = []
+        # get all non-null meal times in a list
+        if self.breakfast_time:
+            times.append(datetime.combine(self.date, self.breakfast_time))
+        if self.lunch_time:
+            times.append(datetime.combine(self.date, self.lunch_time))
+        if self.dinner_time:
+            times.append(datetime.combine(self.date, self.dinner_time))
+
+        # average interval between consecutive meal times
+        if len(log_times) < 2:
+            return None  # Not enough data to compute an average
+
+        # sort times just in case they were not added in order
+        times.sort()
+        total_interval = timedelta()
+        for i in range(1, len(log_times)):
+            total_interval += times[i] - log_times[i - 1]
+
+        avg_interval = total_interval / (len(log_times) - 1)
+        return avg_interval
+
+    def __str__(self):
+        return f"{self.user.username}'s daily log for {self.date}"
     
     @property 
     def is_goal_met(self):
