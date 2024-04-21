@@ -1,5 +1,5 @@
-# OptimumMealGenerator
-given a users MyFitnesspal data. This program will filter through all meals that the user consumed throught the day and create the optimum breakfast, lunch, and dinners given the users fitness goals. This project will make use of machine learning algorithms to find the best food pairings in to meet macro requirements. 
+# CalorAI
+given a users daily food-log data. This program will analyze trends between the data within a history of the user health logs and determine if there are any correlations between them and the user not meeting their desired health goals. 
 
  Structure
 1. Core App
