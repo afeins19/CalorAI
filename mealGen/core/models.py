@@ -11,11 +11,11 @@ import os
 
 class UserProfile(models.Model):
     """Holds the user's account information"""
-
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     age = models.IntegerField(null=True, blank=True)
     weight = models.IntegerField(null=True, blank=True)
     dietary_preferences = models.CharField(max_length=100)
+    daily_calorie_goal = models.IntegerField(default=2000) 
 
 
 class UserHealthData(models.Model):

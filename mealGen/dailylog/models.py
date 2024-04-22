@@ -1,10 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
+from core.models import UserProfile
+import datetime
+import times 
 
 # Create your models here.
 
 class DailyLog(models.Model): 
     user = models.ForeignKey(User, on_delete=models.CASCADE) # tie to a particular user 
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='daily_logs', null=True)
     date = models.DateField()
 
     # dietary attributes for breakfast  
@@ -29,6 +33,10 @@ class DailyLog(models.Model):
     breakfast_time = models.TimeField(null=True, blank=True) # null lets us skip meals
     lunch_time = models.TimeField(null=True, blank=True)
     dinner_time = models.TimeField(null=True, blank=True)
+
+    @property
+    def user_calorie_goal(self):
+        return self.profile.daily_calorie_goal
 
     def total_calories(self):
         return self.breakfast_calories + self.lunch_calories + self.dinner_calories

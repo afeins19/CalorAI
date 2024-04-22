@@ -17,8 +17,12 @@ import pandas as pd
 # setting up the environment to do db calls without the server up 
 
 # loading in the data and returning a pandas df 
-def load_daily_log_data():
-    db_query = DailyLog.objects.all().values() # pull in the data from db 
+def load_daily_log_data(user_id=None):
+    # pull in the data from db 
+    if user_id:
+        db_query = DailyLog.objects.filter(user_id=user_id).values()
+    else:
+        db_query = DailyLog.objects.all().values() # returns list of everything in the db 
 
     if db_query:
         df = pd.DataFrame(list(db_query))
@@ -87,11 +91,17 @@ def encode_skipped_meals(df):
     print(f"Encoded Skipped Meals...")
     return df 
 
-def preprocess_data():
+# calculates the number of calories that the user went over/under their goal 
+def calcualte_over_under(df):
+    df['calorie_diff'] = df['total_calories'] - df['calorie_goal']
+    return df 
+
+def preprocess_data(user_id=None):
     # chain the preprocessing operations 
-    df = load_daily_log_data()
+    df = load_daily_log_data(user_id)
 
     if df is not None:
+        print()
         df = calculate_daily_calories(df)
         df = calculate_meal_percentages(df)
         df = encode_meal_times(df)
@@ -108,7 +118,7 @@ if __name__ == '__main__':
     if df is not None: 
         print("\nSucess!")
         print(f"Shape: {df.shape}\n")
-        print(df[:5])
+        #print(df[:5])
 
     else:
         print("User Has No Log Entries.")
