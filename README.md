@@ -1,4 +1,4 @@
-# OptimumMealGenerator
+# CalorAI
 given a users daily food-log data. This program will analyze trends between the data within a history of the user health logs and determine if there are any correlations between them and the user not meeting their desired health goals.
 ### Target Variable 
 The target variable which our model will predict is the users's total daily caloric intake. 
