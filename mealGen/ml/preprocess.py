@@ -19,10 +19,13 @@ import pandas as pd
 # loading in the data and returning a pandas df 
 def load_daily_log_data():
     db_query = DailyLog.objects.all().values() # pull in the data from db 
-    df = pd.DataFrame(list(db_query))
-    print(f"Loaded columns: {df.columns}")
-    return df
 
+    if db_query:
+        df = pd.DataFrame(list(db_query))
+        print(f"Loaded columns: {df.columns}")
+        return df
+    return None 
+    
 # sums calories from all meals and sets the total_daily_calories col to this sum
 def calculate_daily_calories(df):
     cal_cols = ['breakfast_calories', 'lunch_calories', 'dinner_calories']
@@ -87,20 +90,25 @@ def encode_skipped_meals(df):
 def preprocess_data():
     # chain the preprocessing operations 
     df = load_daily_log_data()
-    df = calculate_daily_calories(df)
-    df = calculate_meal_percentages(df)
-    df = encode_meal_times(df)
-    df = encode_skipped_meals(df)
-    print(df.head())
-    return df 
+
+    if df is not None:
+        df = calculate_daily_calories(df)
+        df = calculate_meal_percentages(df)
+        df = encode_meal_times(df)
+        df = encode_skipped_meals(df)
+
+        return df 
+    return None 
 
 # run script as standalone 
 if __name__ == '__main__': 
     print("Processing Data...")
     df = preprocess_data()
-    
+
     if df is not None: 
-        print("\nSucess!\n")
-        print(df[:2])
+        print("\nSucess!")
+        print(f"Shape: {df.shape}\n")
+        print(df[:5])
+
     else:
-        print("ERROR")
+        print("User Has No Log Entries.")

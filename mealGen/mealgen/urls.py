@@ -21,7 +21,7 @@ from django.contrib.auth.views import LoginView
 from django.urls import path, include
 
 from core.views import home, signup, login, add_mfp_credentials, add_goal
-from core.forms import LoginForm, UserAPICredentialsForm
+from core.forms import LoginForm #, UserAPICredentialsForm
 
 from dailylog.forms import DailyLogform
 from dailylog.views import add_daily_log, daily_log_success

@@ -6,8 +6,8 @@ from django.contrib.auth.views import LoginView
 from .forms import LoginForm, SignUpForm
 from django.contrib.auth import login, authenticate
 
-from .forms import UserAPICredentialsForm
-from .models import UserAPICredentials
+#from .forms import UserAPICredentialsForm
+#from .models import UserAPICredentials
 
 # Create your views here.
 

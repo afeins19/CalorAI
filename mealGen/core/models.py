@@ -17,32 +17,6 @@ class UserProfile(models.Model):
     weight = models.IntegerField(null=True, blank=True)
     dietary_preferences = models.CharField(max_length=100)
 
-class UserAPICredentials(models.Model):
-    """Holds the users MyFitnessPal Email and Token"""
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    
-    email = models.CharField(max_length=100)
-    username = models.CharField(max_length=100)
-    _encrypted_password = models.CharField(max_length=255)
-
-    # getter and setter for encrypted password data 
-    @property
-    def password(self):
-        # Retrieve the encryption key from the environment variable
-        encryption_key = os.getenv("ENCRYPTION_KEY")
-        f = Fernet(encryption_key.encode())
-
-        # Decrypt the password
-        return f.decrypt(self._encrypted_password.encode()).decode()
-
-    @password.setter
-    def password(self, raw_password):
-        # Retrieve the encryption key from the environment variable
-        encryption_key = os.getenv("ENCRYPTION_KEY")
-        f = Fernet(encryption_key.encode())
-
-        # Encrypt and store the password
-        self._encrypted_password = f.encrypt(raw_password.encode()).decode()
 
 class UserHealthData(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
@@ -55,7 +29,7 @@ class UserHealthData(models.Model):
 class UserHealthGoal(models.Model):
     """User defined fitness attributes"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    daily_calorie_goal = models.IntegerField(help_text="Daily Calorie Goal (log entries within 5 percent of this goal will count)")
+    daily_calorie_goal = models.IntegerField(help_text="Daily Calorie Goal (log entries within 5 percent of this goal will count)", null=True)
     current_weight = models.IntegerField()
     target_weight = models.IntegerField()
     start_date = models.DateField()
@@ -77,8 +51,3 @@ class UserHealthGoal(models.Model):
         
 
         
-
-
-
-
-
