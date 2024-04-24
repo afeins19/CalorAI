@@ -18,24 +18,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LoginView
-from django.urls import path, include
+from django.urls import path, include, reverse_lazy
 
-from core.views import home, signup, login, add_mfp_credentials, add_goal
+from core.views import home, signup, login, add_goal, model_results_view
 from core.forms import LoginForm #, UserAPICredentialsForm
 
 from dailylog.forms import DailyLogform
 from dailylog.views import add_daily_log, daily_log_success
-
 
 urlpatterns = [
     path("admin/", admin.site.urls),
 
     # custom paths 
     path('', home, name='home' ), # home page path 
-    path('login/', LoginView.as_view(authentication_form=LoginForm), name='login'), # login path 
-    path('signup/', signup, name='signup'),
-    path('accounts/', include('django.contrib.auth.urls')),  # includes auth-related URLs
-    path('add_mfp_credentials/', add_mfp_credentials, name='add_mfp_credentials'),
-    path('add/', add_daily_log, name='add_daily_log'),
-    path('success/', daily_log_success, name='daily_log_sucesss'),
+    path('login/', LoginView.as_view(template_name='core/login.html', redirect_authenticated_user=True, next_page=reverse_lazy('home')), name='login'),
+    path('add_dailylog/', add_daily_log, name='add_dailylog'),
+    path('model_results/', model_results_view, name='model_results'),
 ]

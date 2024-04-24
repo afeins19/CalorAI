@@ -4,32 +4,40 @@ import sys
 import os
 import django
 from django.db.models import F
+import pandas as pd 
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..')) # add root dir to the script 
-sys.path.append(f"mealGen")
+# setting up the environment to do db calls without the server up 
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mealgen.settings')
 django.setup()
 
-
+# KEEP THIS BELOW ENVIRONMENT PATH SETTING!!!!!!!!
 from dailylog.models import DailyLog
-import pandas as pd 
-# setting up the environment to do db calls without the server up 
+from core.models import UserProfile
 
 # loading in the data and returning a pandas df 
 def load_daily_log_data(user_id=None):
     # pull in the data from db 
     if user_id:
         db_query = DailyLog.objects.filter(user_id=user_id).values()
+        profile = UserProfile.objects.filter(user_id=user_id).first()
+        calorie_goal = profile.daily_calorie_goal
     else:
         db_query = DailyLog.objects.all().values() # returns list of everything in the db 
+        calorie_goal = 2000 # random default for empty db testing  
 
     if db_query:
         df = pd.DataFrame(list(db_query))
-        print(f"Loaded columns: {df.columns}")
+
+        # add users calorie goal to the df 
+        df['calorie_goal'] = calorie_goal 
+        print(f"Loaded columns: {df.columns}\n")
         return df
     return None 
-    
+
+
 # sums calories from all meals and sets the total_daily_calories col to this sum
 def calculate_daily_calories(df):
     cal_cols = ['breakfast_calories', 'lunch_calories', 'dinner_calories']
@@ -92,8 +100,15 @@ def encode_skipped_meals(df):
     return df 
 
 # calculates the number of calories that the user went over/under their goal 
-def calcualte_over_under(df):
-    df['calorie_diff'] = df['total_calories'] - df['calorie_goal']
+def calculate_over_under(df):
+    df['calorie_diff'] = df['total_daily_calories'] - df['calorie_goal']
+    print(f"Calculated Calorie Over-Under...")
+    return df 
+
+# T/F if users daily calories are within +- theshold of their goal
+def met_calorie_goal(df, calorie_threshold=100): 
+    df['met_cal_goal'] = (df['calorie_diff'].abs() <= calorie_threshold)
+    print(f"Encoded Calorie Goal Attainment...")
     return df 
 
 def preprocess_data(user_id=None):
@@ -106,6 +121,8 @@ def preprocess_data(user_id=None):
         df = calculate_meal_percentages(df)
         df = encode_meal_times(df)
         df = encode_skipped_meals(df)
+        df = calculate_over_under(df)
+        df = met_calorie_goal(df)
 
         return df 
     return None 
@@ -119,6 +136,5 @@ if __name__ == '__main__':
         print("\nSucess!")
         print(f"Shape: {df.shape}\n")
         #print(df[:5])
-
     else:
         print("User Has No Log Entries.")
