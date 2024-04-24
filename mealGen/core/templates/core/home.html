@@ -6,7 +6,7 @@
         <h1>Welcome, {{ user.username }}!</h1>
         <p>Manage your fitness goals and check your progress.</p>
         <a href="{% url 'add_dailylog' %}" class="btn">Add Daily Log Entry</a>
-        <a href="{% url 'view_insights' %}" class="btn">View Insights</a>
+        <a href="{% url 'model_results' %}" class="btn">View Insights</a>
     {% else %}
         <h1>Welcome to Our Fitness Tracker!</h1>
         <p>You need to <a href="{% url 'login' %}">log in</a> to manage your entries.</p>
