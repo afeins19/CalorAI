@@ -58,6 +58,7 @@ class Command(BaseCommand):
                      'dinner_fat', 'dinner_carbs', 'dinner_protein'] # add meal skips later 
                                                                      # add meal time changes later 
         correlates = random.sample(features, n_correlates) 
+        
         if len(correlates) > 0:
             print(f"Correlates ({len(correlates)}): {correlates}")
 
@@ -71,14 +72,12 @@ class Command(BaseCommand):
             # see which types the selected features fall under
             selected_types = set(re_types.findall(corr_str))
 
-            print(f"Correlate Types: {selected_types}")
-            print(f"P(TargetMissed)={p_miss_target}")
-
-
             # fat=9cal/g, carb=4cal/g, protein=4cal/g
 
         start_date = date.today() - timedelta(days=days)
         end_date = date.today()
+
+        days_cal_goal_missed=0 # counts total number of days calorie goal not achieved 
 
         # loop from start date (given in arg to this command) to the current date 
         for cur_date in (start_date + timedelta(n) for n in range((end_date - start_date).days)):
@@ -86,11 +85,12 @@ class Command(BaseCommand):
             macro_sums = {'fat': 0, 'carbs': 0, 'protein': 0}
 
             # if curdate is a day where the target is missed
-            if random.random() <= p_miss_target:
+            if random.uniform(0.0,1.0) <= p_miss_target:
+                days_cal_goal_missed+=1
                 percent_increase = random.uniform(0.1, 0.25)
                 for macro in ['fat', 'carbs', 'protein']:
                     if any(macro in corr for corr in correlates):
-                        base_amount = int((0.3 * calorie_goal) / (4 if macro != 'fat' else 9))
+                        base_amount = int((0.3 * calorie_goal) / (4 if macro != 'fat' else 9)) # fat has 9 cals/gram 
                         macro_sums[macro] = base_amount * (1 + percent_increase)
 
             # calc todays total calories
@@ -118,7 +118,9 @@ class Command(BaseCommand):
                 dinner_time='19:00:00'
             )
 
-        self.stdout.write(self.style.SUCCESS(f"Successfully generated {days} of logs for '{username}'."))
-
+        self.stdout.write(self.style.SUCCESS(f"\nSuccessfully generated {days} days of logs for '{username}'."))
+        print(f"Correlate Types: {selected_types}")
+        print(f"P(TargetMissed)={p_miss_target}")
+        print(f"Days Calorie Goal Missed={days_cal_goal_missed}")
 
 

@@ -23,15 +23,14 @@ def generate_diet_data(start_date, num_days, n_correlates=0, p_miss_target=.5):
                 'breakfast_time', 'lunch_time', 'dinner_time']
     
     correlates = random.sample(n_correlates, features) 
+
     if len(correlates) > 0:
         print(f"Correlates ({len(correlates)}): {correlates}")
     
     for _ in range(num_days):
         day = {
             "Date": start_date.strftime('%Y-%m-%d'),
-            
         }
-
         data.append(day)
         start_date += timedelta(days=1)  # move to the next day
     return data

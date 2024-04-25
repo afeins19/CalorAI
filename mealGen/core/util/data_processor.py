@@ -1,4 +1,4 @@
-# formatting timestamps to work with JSON 
+# formatting timestamps to work with JSON (NEEDED FOR MFP)
 
 def datacleanup(data):
   res = []

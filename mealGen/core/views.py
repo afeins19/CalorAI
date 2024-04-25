@@ -6,13 +6,14 @@ from django.contrib.auth.views import LoginView
 from .forms import LoginForm, SignUpForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 # imports from daillylog 
 from dailylog.models import DailyLog
 
 # ml modules 
 from ml import generate_models as gm
-from ml.preprocess import preprocess_data
+from ml.preprocess import preprocess_data, get_col_data_types
 from ml.make_plots import make_and_save_plot, to_base64
 
 # plots 
@@ -74,44 +75,98 @@ def list_user_health_goals(request):
 def model_results_view(request):
     user_id = request.user.id
     df = preprocess_data(user_id=user_id)
-    target = 'met_cal_goal'
+    df_log_entry_dates = df['date']
 
-    if df is not None and 'met_cal_goal' in df.columns:
+    # droping date col from df
+    df = df.drop('date', axis=1)
+
+    target = 'met_cal_goal'
+    
+    if df is not None:
+        print(f"[view -> generate_models] Making Predictions for user: {user_id}")
+        print(f"Final DF Datatypes: {get_col_data_types(df)}")
+
         # split and scale 
         data = gm.split_scale(df=df, target=target)
 
         if data:
+            print(f"\nUser Data Loaded...")
             # train models
             random_forest = gm.train_random_forest(data['X_train_scaled'], data['y_train'])
             xgb = gm.train_xgboost(data['X_train_scaled'], data['y_train'])
+            print("Models Trained...")
 
             # make predictions 
-            random_forest_predicitons = random_forest.predict(data['X_test_scaled'])
-            xgb_predictions = xgb.predict(data['X_test_scaled'])
+            random_forest_predictions = gm.make_predictions(random_forest, data['X_test_scaled'])
+            xgb_predictions = gm.make_predictions(xgb, data['X_test_scaled'])
+            print("\nRandom Forest:")
+            print(random_forest_predictions)
+            print("\nXGBoost:")
+            print(xgb_predictions)
 
-            # evaluate model performance 
-            random_forest_metrics = gm.get_model_metrics(y_true=df[target], y_pred=random_forest_predicitons)
-            xgb_metrics = gm.get_model_metrics(y_true=df[target], y_pred=xgb_predictions)
-
-            # generate and save importance plots
+            # evaluate performance
             features = df.drop(columns=[target]).columns
-            gm.make_and_save_plot(features, random_forest.feature_importances_,
-                                  "Random Forest Feature Importance", "Random Forest", "rf_feature_importance.png")
-            gm.make_and_save_plot(features, xgb.feature_importances_,
-                                  "XGBoost Feature Importance", "XGBoost", "xgb_feature_importance.png")
+
+            random_forest_metrics = gm.get_model_metrics(y_true=data['y_test'], y_pred=random_forest_predictions)
+            print("Random Forest Metrics:", random_forest_metrics)
+
+            xgb_metrics = gm.get_model_metrics(y_true=data['y_test'], y_pred=xgb_predictions)
+            print("XGBoost Metrics:", xgb_metrics)
+
+            random_forest_ft_importances = gm.get_feature_importances(model=random_forest, feature_names=features)
+            xgb_ft_importances = gm.get_feature_importances(model=xgb, feature_names=features)
+            print(f"\nRandom Forset Feature Importances: {random_forest_ft_importances[:3]}")
+            print(f"\nXGBoost Feature Importances: {xgb_ft_importances[:3]}")
+
+            # formating feature importances for sending to hbar plot 
+            rfc_plot_data = {
+                "feature_importances" : [feature for feature, _ in random_forest_ft_importances][:5],
+                "importance_values" : [val for _, val in random_forest_ft_importances][:5]}
+
+            xgb_plot_data = {
+                "feature_importances": [feature for feature, _ in xgb_ft_importances][:5],
+                "importance_values": [val for _, val in xgb_ft_importances][:5]}
+            
+            # generate and save importance plots
+            print(f"\nGenerating Plots...")
+            rfc_plot_data = {
+                "feature_importances": [feature for feature, _ in random_forest_ft_importances][:5],
+                "importance_values": [val for _, val in random_forest_ft_importances][:5]}
+
+            xgb_plot_data = {
+                "feature_importances": [feature for feature, _ in xgb_ft_importances][:5],
+                "importance_values": [val for _, val in xgb_ft_importances][:5]}
+            
+            rfc_path = gm.make_and_save_hbar_plot(
+                x_label=rfc_plot_data['importance_values'],
+                y_label=rfc_plot_data['feature_importances'],
+                model_name='RandomForest',
+                file_path='static/images'
+            )
+
+            xgb_path = gm.make_and_save_hbar_plot(
+                x_label=xgb_plot_data['importance_values'],
+                y_label=xgb_plot_data['feature_importances'],
+                model_name='XGBoost',
+                file_path='static/images'
+            )
 
             # convert plots to b64
-            rf_plot_base64 = gm.to_base64('static/images/rf_feature_importance.png')
-            xgb_plot_base64 = gm.to_base64('static/images/xgb_feature_importance.png')
+            rf_plot_base64 = gm.to_base64(rfc_path)
+            xgb_plot_base64 = gm.to_base64(xgb_path)
 
-            # hand-off to html 
-            return render(request, 'model_results.html', {
+            handoff={
                 'rf_plot': rf_plot_base64,
                 'rf_metrics' : random_forest_metrics,
                 'xgb_plot': xgb_plot_base64,
                 'xgb_metrics' : xgb_metrics
-            })
-    return render(request, '/home')
+            }
+
+            # hand-off to html 
+            return render(request, 'core/model_results.html', handoff)
+    else:
+        print(f"[Error] Models")
+        return render(request, 'core/home.html')
 
 @login_required
 def edit_user_profile(request):

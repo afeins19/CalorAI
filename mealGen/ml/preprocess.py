@@ -19,14 +19,14 @@ from core.models import UserProfile
 from django.contrib.auth.models import User
 
 # loading in the data and returning a pandas df 
-def load_daily_log_data(username=None):
+def load_daily_log_data(user_id=None):
     db_query = None
     calorie_goal = None
 
-    if username:
+    if user_id:
         try:
-            user = User.objects.get(username=username)  # get the user by username
-            profile = UserProfile.objects.get(user=user)  # get user profile
+            user = User.objects.get(pk=user_id)  # get the user by username
+            profile = UserProfile.objects.get(user_id=user.pk)  # get user profile
             calorie_goal = profile.daily_calorie_goal  # get user calorie goal 
 
             db_query = DailyLog.objects.filter(user=user).values()  # get all dailylogs from that user 
@@ -53,11 +53,9 @@ def load_daily_log_data(username=None):
 
     return None
 
-
 # sums calories from all meals and sets the total_daily_calories col to this sum
 def calculate_daily_calories(df):
-    cal_cols = ['breakfast_calories', 'lunch_calories', 'dinner_calories']
-    df['total_daily_calories'] = df[cal_cols].sum(axis=1)
+    df['total_daily_calories'] = df['breakfast_calories'] + df['lunch_calories'] + df['dinner_calories']
     print(f"Calculated Daily Calories...")
     return df
 
@@ -66,11 +64,8 @@ def calculate_meal_percentages(df):
     cal_cols = ['breakfast_calories', 'lunch_calories', 'dinner_calories']
 
     for col in cal_cols:
-        pct_col_str = col + '_pct' # generating the new name of the percent feature 
-        df[pct_col_str] = df[col] / df['total_daily_calories'].replace(0,1)
-
-    # fill days where user didnt log (total daily calories = 0)
-    df.fillna(0, inplace=True)
+        pct_col_str = col + '_pct'
+        df[pct_col_str] = df[col] / df['total_daily_calories']
 
     print(f"Calculated Meal Percentages...")
 
@@ -102,8 +97,23 @@ def encode_meal_times(df):
         time_str = t+'_cat' 
         df[time_str] = pd.to_datetime(df[t], format='%H:%M:%S', errors='coerce').apply(categorize_time) 
 
+        # one-hot encoding meal times 
+        dummies = pd.get_dummies(df[time_str], prefix=time_str)
+        df = pd.concat([df, dummies], axis=1)
+        
+        df.drop(time_str, axis=1, inplace=True)  # drop the original categorical column
+        print(f"Dropped column: {time_str}")
+
     print(f"Encoded Meal Times...")
     return df 
+
+
+def drop_time_cols(df):
+        time_cols = ['breakfast_time', 'lunch_time', 'dinner_time']
+        for col in time_cols:
+            df = df.drop(col, axis=1)
+            print(f"[preprocess] Dropped Column: {col} ")
+        return df
 
 def encode_skipped_meals(df):
     time_cols = ['breakfast_time', 'lunch_time', 'dinner_time']
@@ -127,20 +137,33 @@ def met_calorie_goal(df, calorie_threshold=100):
     print(f"Encoded Calorie Goal Attainment...")
     return df 
 
+def get_col_data_types(df):
+    dtypes = {}
+    for col, dt in df.dtypes.items():
+        dtypes[col] = dt
+    return dtypes 
+
+def get_entry_dates(df):
+    return df['date']
+
 def preprocess_data(user_id=None):
     # chain the preprocessing operations 
     df = load_daily_log_data(user_id)
 
     if df is not None:
         print()
-        df = calculate_daily_calories(df)
+        df = calculate_daily_calories(df) 
         df = calculate_meal_percentages(df)
         df = encode_meal_times(df)
         df = encode_skipped_meals(df)
-        df = calculate_over_under(df)
+        df = calculate_over_under(df) 
         df = met_calorie_goal(df)
+        df = drop_time_cols(df)
 
+        # drop total daily calories 
+        df = df.drop('total_daily_calories', axis=1)
         return df 
+    
     return None 
 
 # run script as standalone 

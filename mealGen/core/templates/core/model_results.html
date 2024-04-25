@@ -5,7 +5,8 @@
     <h1>Model Results</h1>
     <div class="metrics">
         <h2>Random Forest Results</h2>
-        <img src="data:image/png;base64,{{ rf_plot }}" alt="Random Forest Feature Importance">
+
+        <img src="data:image/png;base64,{{ rf_plot_base64 }}" alt="Random Forest Feature Importance">
         <ul>
             <li>Accuracy: {{ rf_metrics.accuracy }}</li>
             <li>Precision: {{ rf_metrics.precision }}</li>
@@ -14,7 +15,7 @@
         </ul>
 
         <h2>XGBoost Results</h2>
-        <img src="data:image/png;base64,{{ xgb_plot }}" alt="XGBoost Feature Importance">
+        <img src="data:image/png;base64,{{ xgb_plot_base64 }}" alt="XGBoost Feature Importance">
         <ul>
             <li>Accuracy: {{ xgb_metrics.accuracy }}</li>
             <li>Precision: {{ xgb_metrics.precision }}</li>

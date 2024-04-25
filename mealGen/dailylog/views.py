@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import DailyLogform
 import matplotlib as plt 
@@ -20,7 +20,7 @@ def add_daily_log(request):
             daily_log.user = request.user # associate this log with a given user 
             daily_log.save() 
 
-            return redirect('daily_log_success') # redirect to a page to notify user of successful log operation 
+            return redirect('daily_log_success.html') # redirect to a page to notify user of successful log operation 
               
     else:
         form = DailyLogform() # prepare an empty DailyLogForm() for the user 
