@@ -19,32 +19,18 @@ the model will gather the following data from the user's MyFitnessPal account an
     Utilities: Helper functions and utilities used across the project.
     Middleware: Common middleware, such as for logging or user authentication.
 
-2. MyFitnessPal Integration App (e.g., fitness_data)
+2. ML App (e.g., data_analysis)
 
-    API Connectors: Modules for connecting to the MyFitnessPal API.
-    Data Downloaders: Functions or classes that handle downloading data in CSV format.
-    Auth: Authentication mechanisms with MyFitnessPal.
-    Management Commands: For tasks like periodic data syncing.
-
-3. ML App (e.g., data_analysis)
-
-    ML Models: Machine learning models, possibly using frameworks like scikit-learn, TensorFlow, or PyTorch.
+    ML Models: scikit-learn -> XGBoost & RandomForest
     Data Preprocessing: Scripts or functions for data cleaning and preparation.
     Analysis: Core analysis and processing logic.
-    Result Storage: Models or methods for storing analysis results.
 
-4. Data Processing App (e.g., data_processing) (Optional)
 
-    Data Transformation: Code to transform raw data into a format suitable for ML analysis.
-    Normalization: Functions to normalize or standardize data.
+3. Scaling and Preprocessing
+    - Standard Scaler
+    - balanced_classes (Random Forest)
 
-5. API App (e.g., api)
-
-    Endpoints: API views or viewsets exposing data and functionalities.
-    Serializers: Data serialization for API responses.
-    Authentication and Permissions: API-specific auth and access control.
-
-6. Frontend App (e.g., frontend) (If not using a SPA framework)
+4. Frontend App (e.g., frontend) 
 
     Templates: Django templates for the frontend.
-    Static Files: CSS, JavaScript, and other static files.
+    Static Files: CSS, html
