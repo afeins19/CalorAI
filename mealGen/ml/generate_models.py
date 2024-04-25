@@ -2,7 +2,7 @@
 
 # data handling
 import pandas as pd 
-from ml.preprocess import preprocess_data
+from .preprocess import preprocess_data
 
 # datasets for generic testing 
 from sklearn.datasets import make_classification
@@ -45,7 +45,7 @@ def split_scale(df, target='caolrie_diff'):
 
 def train_random_forest(X_train, y_train):
     # training a random forest classifier 
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model = RandomForestClassifier(n_estimators=100, random_state=42, class_weight='balanced') # balancing for good mix of calorie met vs unmet days 
     model.fit(X_train, y_train)
     print("Random Forest Model Trained...")
     return model 

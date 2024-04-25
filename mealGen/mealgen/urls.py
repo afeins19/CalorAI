@@ -17,10 +17,10 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path, include, reverse_lazy
 
-from core.views import home, signup, login, add_goal, model_results_view
+from core.views import home, signup, login, add_goal, model_results_view, edit_user_profile
 from core.forms import LoginForm #, UserAPICredentialsForm
 
 from dailylog.forms import DailyLogform
@@ -32,6 +32,8 @@ urlpatterns = [
     # custom paths 
     path('', home, name='home' ), # home page path 
     path('login/', LoginView.as_view(template_name='core/login.html', redirect_authenticated_user=True, next_page=reverse_lazy('home')), name='login'),
-    path('add_dailylog/', add_daily_log, name='add_dailylog'),
+    path('add_daily_log/', add_daily_log, name='add_daily_log'),
     path('model_results/', model_results_view, name='model_results'),
+    path('logout/', LogoutView.as_view(next_page=reverse_lazy('home')), name='logout'),
+    path('edit_profile/', edit_user_profile, name='edit_profile'),
 ]

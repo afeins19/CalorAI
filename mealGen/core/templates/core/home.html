@@ -5,8 +5,16 @@
     {% if user.is_authenticated %}
         <h1>Welcome, {{ user.username }}!</h1>
         <p>Manage your fitness goals and check your progress.</p>
-        <a href="{% url 'add_dailylog' %}" class="btn">Add Daily Log Entry</a>
+        <a href="{% url 'add_daily_log' %}" class="btn">Add Daily Log Entry</a>
         <a href="{% url 'model_results' %}" class="btn">View Insights</a>
+        <a href="{% url 'edit_profile' %}">Edit Profile</a>
+
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+        
+
     {% else %}
         <h1>Welcome to Our Fitness Tracker!</h1>
         <p>You need to <a href="{% url 'login' %}">log in</a> to manage your entries.</p>

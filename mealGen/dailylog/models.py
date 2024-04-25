@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from core.models import UserProfile
 import datetime
-import times 
+#import times 
 
 # Create your models here.
 

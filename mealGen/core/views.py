@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
-from .forms import HealthGoalForm
-from .models import UserHealthGoal
+from .forms import UserProfileForm
+from .models import UserHealthGoal, UserProfile
 
 from django.contrib.auth.views import LoginView
 from .forms import LoginForm, SignUpForm
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
 
 # imports from daillylog 
 from dailylog.models import DailyLog
@@ -69,6 +70,7 @@ def list_user_health_goals(request):
     # pass to template 
     return render(request, 'list_user_health_goals.html', {'health_goals' : user_health_goals})
 
+@login_required
 def model_results_view(request):
     user_id = request.user.id
     df = preprocess_data(user_id=user_id)
@@ -109,6 +111,24 @@ def model_results_view(request):
                 'xgb_plot': xgb_plot_base64,
                 'xgb_metrics' : xgb_metrics
             })
-    return render(request, 'error.html', {'message': 'Data not available or insufficient.'})
+    return render(request, '/home')
+
+@login_required
+def edit_user_profile(request):
+    try:
+        profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        # Optionally create a profile if not found, or handle differently
+        profile = UserProfile.objects.create(user=request.user)
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # Redirect to a confirmation page or back to the profile
+    else:
+        form = UserProfileForm(instance=profile)
+
+    return render(request, 'core/edit_profile.html', {'form': form})
 
 

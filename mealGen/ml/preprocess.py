@@ -16,26 +16,42 @@ django.setup()
 # KEEP THIS BELOW ENVIRONMENT PATH SETTING!!!!!!!!
 from dailylog.models import DailyLog
 from core.models import UserProfile
+from django.contrib.auth.models import User
 
 # loading in the data and returning a pandas df 
-def load_daily_log_data(user_id=None):
-    # pull in the data from db 
-    if user_id:
-        db_query = DailyLog.objects.filter(user_id=user_id).values()
-        profile = UserProfile.objects.filter(user_id=user_id).first()
-        calorie_goal = profile.daily_calorie_goal
-    else:
-        db_query = DailyLog.objects.all().values() # returns list of everything in the db 
-        calorie_goal = 2000 # random default for empty db testing  
+def load_daily_log_data(username=None):
+    db_query = None
+    calorie_goal = None
 
+    if username:
+        try:
+            user = User.objects.get(username=username)  # get the user by username
+            profile = UserProfile.objects.get(user=user)  # get user profile
+            calorie_goal = profile.daily_calorie_goal  # get user calorie goal 
+
+            db_query = DailyLog.objects.filter(user=user).values()  # get all dailylogs from that user 
+            print(f"USER={user.username}, CALORIE GOAL={calorie_goal}")
+
+        except User.DoesNotExist:
+            print("User not found")
+            return None
+        except UserProfile.DoesNotExist:
+            print("UserProfile not found")
+            return None
+
+    else:
+        # If no username is provided, load all logs and use a default calorie goal
+        db_query = DailyLog.objects.all().values()
+        calorie_goal = 2000  # A default value for calorie goal
+
+    # Proceed only if db_query is not empty
     if db_query:
         df = pd.DataFrame(list(db_query))
-
-        # add users calorie goal to the df 
-        df['calorie_goal'] = calorie_goal 
-        print(f"Loaded columns: {df.columns}\n")
+        df['calorie_goal'] = calorie_goal  # Add user's calorie goal to the dataframe
+        print(f"Loaded columns: {df.columns}")
         return df
-    return None 
+
+    return None
 
 
 # sums calories from all meals and sets the total_daily_calories col to this sum
@@ -130,7 +146,7 @@ def preprocess_data(user_id=None):
 # run script as standalone 
 if __name__ == '__main__': 
     print("Processing Data...")
-    df = preprocess_data()
+    df = preprocess_data('username')
 
     if df is not None: 
         print("\nSucess!")

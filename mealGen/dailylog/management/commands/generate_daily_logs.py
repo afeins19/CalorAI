@@ -39,29 +39,18 @@ class Command(BaseCommand):
         p_miss_target = options['p_miss_target']
         calorie_goal = None 
 
-        try: # finding the user if valid 
+        try:
             user = User.objects.get(username=username)
-            print(f"USER={username}")
-            if not user:
-                print("USER NOT FOUND")
-                return 
-            
-            user_id = user.pk
-            print(f"USER_ID={user_id}")
-            # if user exists get the calorie goal 
-             
-            profile = UserProfile.objects.filter(user=user).first()
+            profile = UserProfile.objects.get(user=user)
             calorie_goal = profile.daily_calorie_goal
 
-            if not profile:
-                print("Profile Not Found!")
-            calorie_goal = profile.daily_calorie_goal
-
-            print(calorie_goal)
-                
         except User.DoesNotExist:
-            self.stdout.write(self.style.ERROR(f"User '{username}' Does not exist."))
-            return 
+            self.stdout.write(self.style.ERROR(f"User '{username}' does not exist."))
+            return
+
+        except UserProfile.DoesNotExist:
+            self.stdout.write(self.style.ERROR(f"UserProfile does not exist for user '{username}'."))
+            return
         
         # select features to correlate based on n_correlates 
         features = [ 'breakfast_fat', 'breakfast_carbs', 'breakfast_protein',
@@ -85,9 +74,6 @@ class Command(BaseCommand):
             print(f"Correlate Types: {selected_types}")
             print(f"P(TargetMissed)={p_miss_target}")
 
-            # standard percentages for macros for daily intake 
-            standard_carbs = 0.3
-            standard_fat, standard_protein = 0.3
 
             # fat=9cal/g, carb=4cal/g, protein=4cal/g
 
@@ -95,57 +81,44 @@ class Command(BaseCommand):
         end_date = date.today()
 
         # loop from start date (given in arg to this command) to the current date 
-        for curdate in (start_date+timedelta(n) for n in range((end_date-start_date).days)):
+        for cur_date in (start_date + timedelta(n) for n in range((end_date - start_date).days)):
+            # init daily macro sums to zero
+            macro_sums = {'fat': 0, 'carbs': 0, 'protein': 0}
 
-            # start a daily log entry builder 
-            daily_log_entry = {feature : None for feature in features}
-        
-            # see if we exceed the calorie goal by today 
-            if random.random() <= p_miss_target: 
-                percent_increase = random.random(.1, .25)
-                per_meal_macro_grams = {"carb" : (standard_carbs * calorie_goal) // 4,
-                                     "protein" : (standard_protein * calorie_goal) // 4,
-                                     "fat" : (standard_fat * calorie_goal) // 9}
-                
-                # modify vals based on type 
-                for correlate in correlates: 
-                    num_meals=3 # modify later to handle meal skips 
-                    if re.match(correlate, "carb"): 
-                        per_meal_macro_grams['carb'] =  int(per_meal_macro_grams['carb'] * (1 + percent_increase)) // num_meals
+            # if curdate is a day where the target is missed
+            if random.random() <= p_miss_target:
+                percent_increase = random.uniform(0.1, 0.25)
+                for macro in ['fat', 'carbs', 'protein']:
+                    if any(macro in corr for corr in correlates):
+                        base_amount = int((0.3 * calorie_goal) / (4 if macro != 'fat' else 9))
+                        macro_sums[macro] = base_amount * (1 + percent_increase)
 
-                    if re.match(correlate, "protein"):
-                        per_meal_macro_grams['protein'] =  int(per_meal_macro_grams['protein'] * (1 + percent_increase)) // num_meals
+            # calc todays total calories
+            todays_calories = sum(macro_sums[macro] * (4 if macro != 'fat' else 9) for macro in macro_sums)
+            meal_calories = todays_calories // 3
 
-                    if re.match(correlate, "fat"):
-                        per_meal_macro_grams['fat'] = int(per_meal_macro_grams['fat'] * (1 + percent_increase)) // num_meals
-
-                    total_daily_calories = sum(list(per_meal_macro_grams.values()))
-                    
+            # create the DailyLog entry
             DailyLog.objects.create(
                 user=user,
-                date=curdate,
-
-                breakfast_calories=total_daily_calories//3,
-                breakfast_fat=per_meal_macro_grams['fat'],
-                breakfast_carbs=per_meal_macro_grams['carbs'],
-                breakfast_protein=per_meal_macro_grams['protein'],
-
-                lunch_calories=total_daily_calories//3,
-                lunch_fat=per_meal_macro_grams['fat'],
-                lunch_carbs=per_meal_macro_grams['carbs'],
-                lunch_protein=per_meal_macro_grams['protein'],
-
-                dinner_calories=total_daily_calories//3,
-                dinner_fat=per_meal_macro_grams['fat'],
-                dinner_carbs=per_meal_macro_grams['carbs'],
-                dinner_protein=per_meal_macro_grams['protein'],
-
+                date=cur_date,
+                breakfast_calories=meal_calories,
+                breakfast_fat=macro_sums['fat'],
+                breakfast_carbs=macro_sums['carbs'],
+                breakfast_protein=macro_sums['protein'],
+                lunch_calories=meal_calories,
+                lunch_fat=macro_sums['fat'],
+                lunch_carbs=macro_sums['carbs'],
+                lunch_protein=macro_sums['protein'],
+                dinner_calories=meal_calories,
+                dinner_fat=macro_sums['fat'],
+                dinner_carbs=macro_sums['carbs'],
+                dinner_protein=macro_sums['protein'],
                 breakfast_time='08:00:00',
                 lunch_time='13:00:00',
                 dinner_time='19:00:00'
             )
-        
-        self.stdout.write(self.style.SUCCESS(f"Successfully Generated {days} of logs for '{username}'"))
+
+        self.stdout.write(self.style.SUCCESS(f"Successfully generated {days} of logs for '{username}'."))
 
 
 

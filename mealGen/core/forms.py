@@ -24,6 +24,21 @@ class HealthGoalForm(forms.ModelForm):
         model = UserHealthGoal
         fields = ['current_weight', 'target_weight', 'daily_calorie_goal', 'start_date', 'end_date']
 
+        from django import forms
+from .models import UserProfile
+
+# form for setting users goals and metrics 
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['age', 'weight', 'dietary_preferences', 'daily_calorie_goal']
+        widgets = {
+            'dietary_preferences': forms.TextInput(attrs={'placeholder': 'Enter dietary preferences'}),
+            'age': forms.NumberInput(attrs={'min': 0}),
+            'weight': forms.NumberInput(attrs={'min': 0}),
+            'daily_calorie_goal': forms.NumberInput(attrs={'min': 1000}),  
+        }
+
 
 # class UserAPICredentialsForm(forms.ModelForm):
 #     # lets the user input their MFP credentials 
