@@ -5,21 +5,14 @@ given a users daily food-log data. This program will analyze trends between the 
 1. Core App
 
     Models: Common or base models.
-    Utilities: Helper functions and utilities used across the project.
-    Middleware: Common middleware, such as for logging or user authentication.
+    Utilities: Helper functions -> `/util`
 
-2. MyFitnessPal Integration App (e.g., fitness_data)
 
-    API Connectors: Modules for connecting to the MyFitnessPal API.
-    Data Downloaders: Functions or classes that handle downloading data in CSV format.
-    Auth: Authentication mechanisms with MyFitnessPal.
-    Management Commands: For tasks like periodic data syncing.
+2. ML App (e.g., data_analysis)
 
-3. ML App (e.g., data_analysis)
-
-    ML Models: Machine learning models, possibly using frameworks like scikit-learn, TensorFlow, or PyTorch.
-    Data Preprocessing: Scripts or functions for data cleaning and preparation.
-    Analysis: Core analysis and processing logic.
+    ML Models: XGBoost, RandomForest
+    Data Preprocessing: Custom Scripts in `/ml`
+    Analysis: Core analysis and processing logic
     Result Storage: Models or methods for storing analysis results.
 
 4. Data Processing App (e.g., data_processing) (Optional)
@@ -33,7 +26,7 @@ given a users daily food-log data. This program will analyze trends between the 
     Serializers: Data serialization for API responses.
     Authentication and Permissions: API-specific auth and access control.
 
-6. Frontend App (e.g., frontend) (If not using a SPA framework)
+6. Frontend App (e.g., frontend) 
 
     Templates: Django templates for the frontend.
     Static Files: CSS, JavaScript, and other static files.
