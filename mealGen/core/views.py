@@ -83,9 +83,8 @@ def model_results_view(request):
     target = 'met_cal_goal'
     
     if df is not None:
-        print(f"[view -> generate_models] Making Predictions for user: {user_id}")
-        print(f"Final DF Datatypes: {get_col_data_types(df)}")
-
+        print(f"[view -> generate_models] Making Predictions for user: [{request.user.username}]")
+        
         # split and scale 
         data = gm.split_scale(df=df, target=target)
 

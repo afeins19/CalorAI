@@ -87,7 +87,8 @@ class Command(BaseCommand):
             # if curdate is a day where the target is missed
             if random.uniform(0.0,1.0) <= p_miss_target:
                 days_cal_goal_missed+=1
-                percent_increase = random.uniform(0.1, 0.25)
+                percent_increase = random.uniform(0.05, 0.30) # select a random amount to to increase by (percent wise) 
+
                 for macro in ['fat', 'carbs', 'protein']:
                     if any(macro in corr for corr in correlates):
                         base_amount = int((0.3 * calorie_goal) / (4 if macro != 'fat' else 9)) # fat has 9 cals/gram 

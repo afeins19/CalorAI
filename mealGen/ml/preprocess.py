@@ -162,7 +162,12 @@ def preprocess_data(user_id=None):
 
         # drop total daily calories 
         df = df.drop('total_daily_calories', axis=1)
+        print("\nFinal Columns")
+        for col in df.columns:
+            print(f"\t{col}")
+        print(f"Total={len(df.columns)}\n")
         return df 
+    
     
     return None 
 
