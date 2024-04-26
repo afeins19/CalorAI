@@ -165,7 +165,7 @@ def model_results_view(request):
             # hand-off to html 
             return render(request, 'core/model_results.html', handoff)
         
-        print(f"[Error] Models")xw
+        print(f"[Error] Models")
         return render(request, 'core/home.html')
 
 @login_required
