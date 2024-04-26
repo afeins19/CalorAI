@@ -1,37 +1,91 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>{% block title %}{% endblock %}</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        nav {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+        main {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
 
+        nav a {
+            color: #f7df1e; s
+            text-decoration: none; 
+            padding: 0 10px; 
+        }
+
+        nav a:hover {
+            color: #ffe135; 
+        }
+
+    </style>
 </head>
-
 <body>
+    <nav>
+        <!-- Navigation -->
+        {% if user.is_authenticated %}
+            <a href="{% url 'add_daily_log' %}" class="btn">Add Daily Log Entry</a>
+            <a href="{% url 'model_results' %}" class="btn">View Insights</a>
+            <a href="{% url 'edit_profile' %}">Edit Profile</a>
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <h1>Welcome to CalorAI.</h1>
+                <p>You need to <a href="{% url 'login' %}">log in</a> to manage your entries.</p>
+        {% endif %}
 
-        <nav>
-
-        </nav>
-
+    </nav>
     <main>
-
         {% block content %}
 
+        <div class="container">
+            <a href="{% url 'home' %}" class="btn">Home</a>
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'add_daily_log' %}" class="btn">Add Daily Log Entry</a>
+                <a href="{% url 'model_results' %}" class="btn">View Insights</a>
+                <a href="{% url 'edit_profile' %}">Edit Profile</a>
+        
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Logout</button>
+                </form>
+            {% else %}
+                <h1>Welcome to Our Fitness Tracker!</h1>
+                <p>You need to <a href="{% url 'login' %}">log in</a> to manage your entries.</p>
+            {% endif %}
+
         {% endblock %}
-
     </main>
-
     <footer>
-
-
-
+        © 2024 CalorAI
     </footer>
-
 </body>
-
 </html>

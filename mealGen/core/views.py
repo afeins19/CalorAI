@@ -164,8 +164,8 @@ def model_results_view(request):
 
             # hand-off to html 
             return render(request, 'core/model_results.html', handoff)
-    else:
-        print(f"[Error] Models")
+        
+        print(f"[Error] Models")xw
         return render(request, 'core/home.html')
 
 @login_required
@@ -180,10 +180,9 @@ def edit_user_profile(request):
         form = UserProfileForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect('profile')  # Redirect to a confirmation page or back to the profile
-    else:
-        form = UserProfileForm(instance=profile)
-
+            return render(request, 'core/home.html')
+        
+    form = UserProfileForm(instance=profile)
     return render(request, 'core/edit_profile.html', {'form': form})
 
 
