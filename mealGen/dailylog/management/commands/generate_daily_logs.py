@@ -30,7 +30,6 @@ class Command(BaseCommand):
         parser.add_argument('n_correlates', type=int, help='Number of features to correlate with target.')
         parser.add_argument('p_miss_target', type=float, help='Probability (.25<p<.75) that a users miss their calorie target on a given day')
 
-
     def handle(self, *args, **options):
         # setting passed-in args 
         username = options['username']
@@ -87,12 +86,22 @@ class Command(BaseCommand):
             # if curdate is a day where the target is missed
             if random.uniform(0.0,1.0) <= p_miss_target:
                 days_cal_goal_missed+=1
-                percent_increase = random.uniform(0.05, 0.30) # select a random amount to to increase by (percent wise) 
+                percent_increase = random.uniform(0.10, 0.5) # select a random amount to to increase by (percent wise) 
 
                 for macro in ['fat', 'carbs', 'protein']:
                     if any(macro in corr for corr in correlates):
                         base_amount = int((0.3 * calorie_goal) / (4 if macro != 'fat' else 9)) # fat has 9 cals/gram 
                         macro_sums[macro] = base_amount * (1 + percent_increase)
+
+            else: 
+                # normal day 
+                calories_per_meal = calorie_goal // 3
+                for macro in macro_sums:
+                    if macro == 'fat': 
+                        macro_sums[macro] = calories_per_meal // 9
+                    else: # protein and carbs grams
+                        macro_sums[macro] = calories_per_meal // 4 
+
 
             # calc todays total calories
             todays_calories = sum(macro_sums[macro] * (4 if macro != 'fat' else 9) for macro in macro_sums)

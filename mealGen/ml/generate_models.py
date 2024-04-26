@@ -116,8 +116,14 @@ def make_and_save_hbar_plot(x_label, y_label, model_name, file_path='mealGen/sta
     
     print(f"\nGenerating Plot for {model_name}...")
     # create the plot
-    plt.figure(figsize=(10, 8))
-    sns.barplot(x='Importance', y='Feature', data=feature_importance)
+    plt.figure(figsize=(12, 8))
+
+    normalized_importances = feature_importance['Importance'] / feature_importance['Importance'].max()
+    cmap = plt.get_cmap('viridis')
+    colors = [cmap(i) for i in normalized_importances]
+
+    sns.barplot(x='Importance', y='Feature', data=feature_importance, palette=colors)
+
     plt.title(f'Feature Importances for {model_name}')
     plt.xlabel('Importance')
     plt.ylabel('Features')
@@ -139,8 +145,31 @@ def make_and_save_hbar_plot(x_label, y_label, model_name, file_path='mealGen/sta
     print(f"Plot Saved...")
     return full_path
 
-def make_covariance_matrix():
-    pass
+def make_covariance_matrix(labels, data, model_name, file_path):
+    cov_matrix = np.cov(data, rowvar=False) 
+
+    # using seaborn to create the heatmap
+    sns.set_theme(style="white")  
+    plt.figure(figsize=(10, 8))  
+    ax = sns.heatmap(cov_matrix, annot=True, fmt=".2f", cmap='coolwarm',
+                     xticklabels=labels, yticklabels=labels,
+                     cbar_kws={'label': 'Covariance'})
+    plt.title('Covariance Matrix')
+    plt.ylabel('Variables')
+    plt.xlabel('Variables')
+    
+    if not os.path.exists(file_path):
+        os.makedirs(file_path)
+
+    # construct the full path with the base_dir
+    file_name = model_name.lower() + "_cov_matrix.png"
+
+    full_path = os.path.join(settings.BASE_DIR, file_path, file_name)
+    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+    
+    plt.savefig(full_path)
+    print(f"Plot Saved...")
+    return full_path
 
 def to_base64(file_path):
     # gets b64 encoding of file 

@@ -129,11 +129,11 @@ def model_results_view(request):
             # generate and save importance plots
             print(f"\nGenerating Plots...")
             rfc_plot_data = {
-                "feature_importances": [feature for feature, _ in random_forest_ft_importances][:5],
+                "feature_importances": [feature.replace("_"," ")  for feature, _ in random_forest_ft_importances][:5],
                 "importance_values": [val for _, val in random_forest_ft_importances][:5]}
 
             xgb_plot_data = {
-                "feature_importances": [feature for feature, _ in xgb_ft_importances][:5],
+                "feature_importances": [feature.replace("_"," ") for feature, _ in xgb_ft_importances][:5],
                 "importance_values": [val for _, val in xgb_ft_importances][:5]}
             
             rfc_path = gm.make_and_save_hbar_plot(
@@ -150,9 +150,10 @@ def model_results_view(request):
                 file_path='static/images'
             )
 
+
             # convert plots to b64
-            rf_plot_base64 = gm.to_base64(rfc_path)
-            xgb_plot_base64 = gm.to_base64(xgb_path)
+            rf_plot_base64 = gm.to_base64('/Users/aaronfeinberg/Projects/PycharmProjects/calorai/OptimumMealGenerator/mealGen/randomforest_feature_importance_plot.png')
+            xgb_plot_base64 = gm.to_base64('/Users/aaronfeinberg/Projects/PycharmProjects/calorai/OptimumMealGenerator/mealGen/xgboost_feature_importance_plot.png')
 
             handoff={
                 'rf_plot': rf_plot_base64,

@@ -6,22 +6,24 @@
     <div class="metrics">
         <h2>Random Forest Results</h2>
 
-        <img src="data:image/png;base64,{{ rf_plot_base64 }}" alt="Random Forest Feature Importance">
+        <img src="data:image/png;base64,{{ rf_plot }}" alt="Random Forest Feature Importance">
         <h1>Random Forest Feature Importances</h1>
         <ul>
-            <h3>Random Forest Feature Importances</h3>
+            <h4>Consider these features in your diet:</h4>
                 <ul>
                     {% for feature, importance in rf_importances %}
                         <li>{{ feature }}: {{ importance }}</li>
                     {% endfor %}
                 </ul>
+
+            <h3>Model Performance Metrics</h3>
             <li>Accuracy: {{ rf_metrics.accuracy }}</li>
             <li>Precision: {{ rf_metrics.precision }}</li>
             <li>Recall: {{ rf_metrics.recall }}</li>
             <li>F1 Score: {{ rf_metrics.f1_score }}</li>
         </ul>
 
-        <h2>XGBoost Results</h2>
+        <!-- <h2>XGBoost Results</h2>
         <img src="data:image/png;base64,{{ xgb_plot_base64 }}" alt="XGBoost Feature Importance">
         <ul>
             <h3>XGBoost Feature Importances</h3>
@@ -35,7 +37,7 @@
             <li>Recall: {{ xgb_metrics.recall }}</li>
             <li>F1 Score: {{ xgb_metrics.f1_score }}</li>
         </ul>
-    </div>
+    </div> -->
 
     <a href="{% url 'home' %}" class="btn btn-primary">Return to Home</a>
 </div>
