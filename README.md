@@ -35,6 +35,23 @@ Given a users daily food-log data. This program will analyze trends in the data 
     Templates: Django templates for the frontend.
     Static Files: CSS, html
 
+# Main Filles
+
+### Data & Models 
+- **Preprocessing File**: `mealGen/ml/preprocess.py`
+
+- **Model Generation File**: `mealGen/ml/generate_models.py`
+
+- **Synthetic Data Generator**: `mealGen/dailylog/management/commands/generate_daily_logs.py`
+
+- **Clearing User Logs**: `mealGen/dailylog/management/commands/clear_daily_logs.py`
+
+### Django Backend
+
+- **Views for core functionalitys**: `mealGen/core/views.py`
+
+- **Views for daily logs and insights**: `mealGen/dailylog/views.py`
+
 # User Creation
 
 ### Signing Up
