@@ -101,7 +101,6 @@ def get_model_metrics(y_true, y_pred):
         'recall': recall,
         'f1_score': f1}
 
-
 # gets the most important features for the models predictions (sorted by importance)
 def get_feature_importances(model, feature_names): 
     print(f"Getting Feature Importances for Model: {str(model)[:13]}")

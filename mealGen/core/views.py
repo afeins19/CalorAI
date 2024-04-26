@@ -156,10 +156,11 @@ def model_results_view(request):
 
             handoff={
                 'rf_plot': rf_plot_base64,
+                'rf_importances' : random_forest_ft_importances[:5],
                 'rf_metrics' : random_forest_metrics,
                 'xgb_plot': xgb_plot_base64,
-                'xgb_metrics' : xgb_metrics
-            }
+                'xgb_importances' : xgb_ft_importances[:5],
+                'xgb_metrics' : xgb_metrics}
 
             # hand-off to html 
             return render(request, 'core/model_results.html', handoff)

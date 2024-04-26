@@ -7,7 +7,14 @@
         <h2>Random Forest Results</h2>
 
         <img src="data:image/png;base64,{{ rf_plot_base64 }}" alt="Random Forest Feature Importance">
+        <h1>Random Forest Feature Importances</h1>
         <ul>
+            <h3>Random Forest Feature Importances</h3>
+                <ul>
+                    {% for feature, importance in rf_importances %}
+                        <li>{{ feature }}: {{ importance }}</li>
+                    {% endfor %}
+                </ul>
             <li>Accuracy: {{ rf_metrics.accuracy }}</li>
             <li>Precision: {{ rf_metrics.precision }}</li>
             <li>Recall: {{ rf_metrics.recall }}</li>
@@ -17,6 +24,12 @@
         <h2>XGBoost Results</h2>
         <img src="data:image/png;base64,{{ xgb_plot_base64 }}" alt="XGBoost Feature Importance">
         <ul>
+            <h3>XGBoost Feature Importances</h3>
+                <ul>
+                    {% for feature, importance in xgb_importances %}
+                        <li>{{ feature }}: {{ importance }}</li>
+                    {% endfor %}
+                </ul>
             <li>Accuracy: {{ xgb_metrics.accuracy }}</li>
             <li>Precision: {{ xgb_metrics.precision }}</li>
             <li>Recall: {{ xgb_metrics.recall }}</li>
