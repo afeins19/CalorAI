@@ -81,6 +81,7 @@ Quit the server with CONTROL-C.
 For the purposes of demonstration and testing, we have created a test user for generating synthetic data for (instructions given below). This users information already comes preloaded in the project database. To login as this user, please enter the credentials given below: 
 
 *username:* test_user 
+
 *password*: 12345 
 
 ### Synthetic Data Creation 
