@@ -118,7 +118,7 @@ def make_and_save_hbar_plot(x_label, y_label, model_name, file_path='mealGen/sta
     # create the plot
     plt.figure(figsize=(10, 8))
     sns.barplot(x='Importance', y='Feature', data=feature_importance)
-    plt.title('Feature Importances')
+    plt.title(f'Feature Importances for {model_name}')
     plt.xlabel('Importance')
     plt.ylabel('Features')
     
@@ -138,6 +138,9 @@ def make_and_save_hbar_plot(x_label, y_label, model_name, file_path='mealGen/sta
     plt.savefig(full_path)
     print(f"Plot Saved...")
     return full_path
+
+def make_covariance_matrix():
+    pass
 
 def to_base64(file_path):
     # gets b64 encoding of file 
