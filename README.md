@@ -2,7 +2,7 @@
 
 # Goal 
 
-Given a users daily food-log data. This program will analyze trends in the data and determine if there are any correlations between them and the user not meeting their desired health goals. This program should highlight specific behaviors that the user may have which impede their calorie intake goals. Training 
+Given a users daily food-log data. This program will analyze trends in the data and determine if there are any correlations between them and the user not meeting their desired health goals. This program should highlight specific behaviors that the user may have which impede their calorie intake goals.  
 
 **Target**: `met_calorie_goal`
 - the models are trained to predict whether or not the user met his or her calorie goal on a given day given their data. 
