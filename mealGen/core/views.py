@@ -43,10 +43,10 @@ def signup(request):
             return redirect('home')  # Redirect to a home page or other page
     else:
         form = SignUpForm()
-    return render(request, 'signup.html', {'form': form})
+    return render(request, 'core/signup.html', {'form': form})
 
 def add_goal(request):
-    # 
+    # user can add his or her health goal 
     if request.method == 'POST':
         form = HealthGoalForm(request.POST)
 
@@ -136,6 +136,9 @@ def model_results_view(request):
                 "feature_importances": [feature.replace("_"," ") for feature, _ in xgb_ft_importances][:5],
                 "importance_values": [val for _, val in xgb_ft_importances][:5]}
             
+            print("RFCRFCRFC")
+            print(rfc_plot_data['feature_importances'])
+            
             rfc_path = gm.make_and_save_hbar_plot(
                 x_label=rfc_plot_data['importance_values'],
                 y_label=rfc_plot_data['feature_importances'],
@@ -150,10 +153,13 @@ def model_results_view(request):
                 file_path='static/images'
             )
 
-
             # convert plots to b64
             rf_plot_base64 = gm.to_base64('/Users/aaronfeinberg/Projects/PycharmProjects/calorai/OptimumMealGenerator/mealGen/randomforest_feature_importance_plot.png')
             xgb_plot_base64 = gm.to_base64('/Users/aaronfeinberg/Projects/PycharmProjects/calorai/OptimumMealGenerator/mealGen/xgboost_feature_importance_plot.png')
+
+            # converting feature importances into strings for the user 
+            #rf_ft_strs = [str(fi[0]).replace("_"," ") for fi in random_forest_ft_importances]
+            
 
             handoff={
                 'rf_plot': rf_plot_base64,

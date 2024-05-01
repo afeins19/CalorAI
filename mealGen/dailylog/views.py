@@ -28,6 +28,7 @@ def add_daily_log(request):
         
 
 def daily_log_success(request):
+    return redirect('dailylog/log_sucess.html')
     return render(request, 'dailylog/log_success.html')
 
  
