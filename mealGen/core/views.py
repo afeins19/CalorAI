@@ -22,10 +22,8 @@ import seaborn as sns
 from io import BytesIO
 import base64 
 
-#from .forms import UserAPICredentialsForm
-#from .models import UserAPICredentials
-
-# Create your views here.
+# handling path abstraction for different OS types
+from pathlib import Path
 
 def home(request):
     # homepage 
@@ -150,16 +148,17 @@ def model_results_view(request):
                 x_label=xgb_plot_data['importance_values'],
                 y_label=xgb_plot_data['feature_importances'],
                 model_name='XGBoost',
-                file_path='static/images'
+                file_path='static/plots'
             )
 
+            print(f"RFC_PATH={rfc_path}")
+
             # convert plots to b64
-            rf_plot_base64 = gm.to_base64('/Users/aaronfeinberg/Projects/PycharmProjects/calorai/OptimumMealGenerator/mealGen/randomforest_feature_importance_plot.png')
-            xgb_plot_base64 = gm.to_base64('/Users/aaronfeinberg/Projects/PycharmProjects/calorai/OptimumMealGenerator/mealGen/xgboost_feature_importance_plot.png')
+            rf_plot_base64 = gm.to_base64(rfc_path)
+            xgb_plot_base64 = gm.to_base64(xgb_path)
 
             # converting feature importances into strings for the user 
             #rf_ft_strs = [str(fi[0]).replace("_"," ") for fi in random_forest_ft_importances]
-            
 
             handoff={
                 'rf_plot': rf_plot_base64,

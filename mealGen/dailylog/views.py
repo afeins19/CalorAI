@@ -20,7 +20,7 @@ def add_daily_log(request):
             daily_log.user = request.user # associate this log with a given user 
             daily_log.save() 
 
-            return redirect('daily_log_success.html') # redirect to a page to notify user of successful log operation 
+            return redirect('daily_log_success') # redirect to a page to notify user of successful log operation
               
     else:
         form = DailyLogform() # prepare an empty DailyLogForm() for the user 
@@ -28,7 +28,6 @@ def add_daily_log(request):
         
 
 def daily_log_success(request):
-    return redirect('dailylog/log_sucess.html')
     return render(request, 'dailylog/log_success.html')
 
  

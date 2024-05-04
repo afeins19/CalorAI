@@ -32,11 +32,11 @@ urlpatterns = [
     # custom paths 
     path('', home, name='home' ), # home page path 
     path('login/', LoginView.as_view(template_name='core/login.html', redirect_authenticated_user=True, next_page=reverse_lazy('home')), name='login'),
+    path('logout/', LogoutView.as_view(next_page=reverse_lazy('home')), name='logout'),
     path('signup/', signup, name='signup'),
     path('add_daily_log/', add_daily_log, name='add_daily_log'),
-    path('log_sucess', daily_log_success, name='daily_log_sucess'),
+    path('log_success/', daily_log_success, name='daily_log_success'),
     path('model_results/', model_results_view, name='model_results'),
-    path('logout/', LogoutView.as_view(next_page=reverse_lazy('home')), name='logout'),
     path('edit_profile/', edit_user_profile, name='edit_profile'),
 
 ]

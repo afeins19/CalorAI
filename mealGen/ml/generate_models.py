@@ -26,6 +26,9 @@ from io import BytesIO
 import base64
 import numpy as np
 
+# for getting the full path for the current OS
+from pathlib import Path
+
 def get_log_dates(df):
     return df['dates']
 
@@ -127,23 +130,24 @@ def make_and_save_hbar_plot(x_label, y_label, model_name, file_path='mealGen/sta
     plt.title(f'Feature Importances for {model_name}')
     plt.xlabel('Importance')
     plt.ylabel('Features')
-    
-    # save the plot to a file
-    plt.savefig(f"{model_name.lower()}_feature_importance_plot.png")
-    plt.close()
-
-    if not os.path.exists(file_path):
-        os.makedirs(file_path)
 
     # construct the full path with the base_dir
     file_name = model_name.lower() + "_feature_importance_plot.png"
 
-    full_path = os.path.join(settings.BASE_DIR, file_path, file_name)
-    os.makedirs(os.path.dirname(full_path), exist_ok=True)
-    
-    plt.savefig(full_path)
-    print(f"Plot Saved...")
-    return full_path
+    return save_plot_to_file(plot=plt, file_name=file_name)
+
+def save_plot_to_file(plot, file_name, sub_folder='plots'):
+    plot_dir = Path(settings.BASE_DIR) / 'static' / sub_folder
+    plot_dir.mkdir(parents=True, exist_ok=True) # make if folder isn't there
+
+    file_path = plot_dir / file_name
+
+    # saving the plot
+    plot.savefig(file_path)
+    plt.close()
+
+    print(f"\nPlot Saved...\n")
+    return file_path
 
 def make_covariance_matrix(labels, data, model_name, file_path):
     cov_matrix = np.cov(data, rowvar=False) 
@@ -178,6 +182,13 @@ def to_base64(file_path):
         encoded_string = base64.b64encode(f.read()).decode('utf-8')
     print("Plot Encoded...")
     return encoded_string
+
+# uses correlates from a given model to show instances that contributed most to exceeding calorie goal
+def get_correlate_history_(user, df, correlates):
+    # @TODO given a users dataframe, create a new ones for each correlate sorted by value missed for the target?
+    pass
+
+
 
 # testing with generic data 
 if __name__ == "__main__":
