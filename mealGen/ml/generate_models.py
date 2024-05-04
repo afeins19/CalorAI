@@ -189,7 +189,6 @@ def get_correlate_history_(user, df, correlates):
     pass
 
 
-
 # testing with generic data 
 if __name__ == "__main__":
     # Generate a synthetic dataset
