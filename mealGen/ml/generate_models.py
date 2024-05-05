@@ -4,10 +4,14 @@
 import matplotlib
 matplotlib.use('Agg') # backend set 
 
-import matplotlib.pyplot as plt 
+from matplotlib.dates import DateFormatter
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
 import seaborn as sns
 from django.conf import settings 
 import os
+import re
 
 # data handling
 import pandas as pd 
@@ -113,7 +117,7 @@ def get_feature_importances(model, feature_names):
     return sorted_attrs
 
 # makes and saves a horizontal bar plot 
-def make_and_save_hbar_plot(x_label, y_label, model_name, file_path='mealGen/static/plot_images'):
+def make_and_save_feature_importance_plots(x_label, y_label, model_name, file_path='mealGen/static/plot_images'):
     feature_importance = pd.DataFrame({'Feature': y_label, 'Importance': x_label})
     feature_importance = feature_importance.sort_values(by='Importance', ascending=False)
     
@@ -136,7 +140,7 @@ def make_and_save_hbar_plot(x_label, y_label, model_name, file_path='mealGen/sta
 
     return save_plot_to_file(plot=plt, file_name=file_name)
 
-def save_plot_to_file(plot, file_name, sub_folder='plots'):
+def save_plot_to_file(plot, file_name, sub_folder='importance_plots'):
     plot_dir = Path(settings.BASE_DIR) / 'static' / sub_folder
     plot_dir.mkdir(parents=True, exist_ok=True) # make if folder isn't there
 
@@ -184,10 +188,81 @@ def to_base64(file_path):
     return encoded_string
 
 # uses correlates from a given model to show instances that contributed most to exceeding calorie goal
-def get_correlate_history_(user, df, correlates):
-    # @TODO given a users dataframe, create a new ones for each correlate sorted by value missed for the target?
-    pass
+# for now i will consider macro categories for features (carbs = breakfast_carbs + lunch_carbs + dinner_carbs, fat = breakfast_fat + ...)
+def make_and_save_historical_data_plots(df: pd.DataFrame, top_correlates, plot_name, x_label=None, y_label=None, dates_goal_missed_cols=None, file_path='static/history_plots/'):
+    print(f"\nGetting Historical Examples from Correlates...")
 
+    # for selecting macro cols
+    f_types = ['fat', 'carbs', 'protein']
+    # creating a string to match feature types with the randomly selected ones
+    re_types = re.compile('|'.join(re.escape(f) for f in f_types))
+    # searchable string of selected correlates
+    corr_str = str("".join(top_correlates))
+
+    # see which types the selected features fall under
+    selected_macros = list(set(re_types.findall(corr_str)))
+    selected_type_regex = ""
+    print(f"Macro Types (will be summed daily)...{selected_macros}")
+
+    df_macro_totals = pd.DataFrame(columns=[name+'_totals' for name in selected_macros]) # generating totals columns
+
+    # add in date col if passed in
+    if len(dates_goal_missed_cols) > 0:
+        df_macro_totals['date'] = dates_goal_missed_cols
+
+    for macro in selected_macros:
+        # get all rows for the selcted macro type
+        df_macro_rows = df.filter(regex=macro+'$')
+        # sum over each column and make a new data frame
+        row_sums = df_macro_rows.sum(axis=1)
+
+        df_macro_totals[macro+'_totals'] = row_sums
+
+    # i think it woooooorks
+    print(f"\n\n\n{df_macro_totals.head()}\n\n\n")
+
+    # plot each line for each macro
+    print("Generating Plots...")
+    for macro in df_macro_totals.columns:
+        plt.plot(df_macro_totals[macro], label=macro)
+        print(f"\t[{macro} plotted...]")
+
+    # setup plot
+    if not x_label:
+        x_label = 'Date'
+    if not y_label:
+        y_label = 'gr/day'
+
+    file_path = file_path + plot_name + '_history_plot.png'
+
+    # plotting
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    colors = ("orange", "skyblue", "limegreen")
+
+    for macro, color in list(zip(selected_macros, colors)):
+        ax.bar(df_macro_totals['date'], df_macro_totals[macro+'_totals'], label=macro, color= color)
+
+    # labels and title
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Total Macro Intake')
+    ax.set_title('Daily Macro Intake on Days Calorie Goals Were Not Met')
+    ax.legend()
+
+    # formatting the x-axis to show daily increments
+
+
+    # rotate date labels for better visibility
+    plt.xticks(rotation=45)
+    plt.tight_layout()  # make some roooooooooooooooom
+
+    # saving...
+    print("saving plots...")
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    plt.savefig(file_path)
+    plt.close()
+
+    return file_path
 
 # testing with generic data 
 if __name__ == "__main__":

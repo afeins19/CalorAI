@@ -16,7 +16,7 @@ from ml import generate_models as gm
 from ml.preprocess import preprocess_data, get_col_data_types
 from ml.make_plots import make_and_save_plot, to_base64
 
-# plots 
+# importance_plots
 import matplotlib as plt 
 import seaborn as sns
 from io import BytesIO
@@ -71,8 +71,10 @@ def list_user_health_goals(request):
 
 @login_required
 def model_results_view(request):
+
     user_id = request.user.id
     df = preprocess_data(user_id=user_id)
+    df_og = df
     df_log_entry_dates = df['date']
 
     # droping date col from df
@@ -124,41 +126,52 @@ def model_results_view(request):
                 "feature_importances": [feature for feature, _ in xgb_ft_importances][:5],
                 "importance_values": [val for _, val in xgb_ft_importances][:5]}
             
-            # generate and save importance plots
+            # generate and save importance importance_plots
             print(f"\nGenerating Plots...")
             rfc_plot_data = {
-                "feature_importances": [feature.replace("_"," ")  for feature, _ in random_forest_ft_importances][:5],
+                "feature_importances": [feature for feature, _ in random_forest_ft_importances][:5],
                 "importance_values": [val for _, val in random_forest_ft_importances][:5]}
 
             xgb_plot_data = {
-                "feature_importances": [feature.replace("_"," ") for feature, _ in xgb_ft_importances][:5],
+                "feature_importances": [feature for feature, _ in xgb_ft_importances][:5],
                 "importance_values": [val for _, val in xgb_ft_importances][:5]}
             
             print("RFCRFCRFC")
             print(rfc_plot_data['feature_importances'])
             
-            rfc_path = gm.make_and_save_hbar_plot(
+            rfc_path = gm.make_and_save_feature_importance_plots(
                 x_label=rfc_plot_data['importance_values'],
                 y_label=rfc_plot_data['feature_importances'],
                 model_name='RandomForest',
                 file_path='static/images'
             )
 
-            xgb_path = gm.make_and_save_hbar_plot(
+            xgb_path = gm.make_and_save_feature_importance_plots(
                 x_label=xgb_plot_data['importance_values'],
                 y_label=xgb_plot_data['feature_importances'],
                 model_name='XGBoost',
-                file_path='static/plots'
+                file_path='static/importance_plots'
             )
 
             print(f"RFC_PATH={rfc_path}")
 
-            # convert plots to b64
+            # convert importance_plots to b64
             rf_plot_base64 = gm.to_base64(rfc_path)
             xgb_plot_base64 = gm.to_base64(xgb_path)
 
-            # converting feature importances into strings for the user 
-            #rf_ft_strs = [str(fi[0]).replace("_"," ") for fi in random_forest_ft_importances]
+            # getting historical plots based on past user data and top correlates
+            # making tuples -> (feature_name, importance value)
+            rfc_top_correlates = list(zip(rfc_plot_data['feature_importances'], rfc_plot_data['importance_values']))
+            rfc_top_correlates.sort(key=lambda x : x[1]) # sorting by importance value
+            # just getting the feature names
+            rfc_top_correlate_names = list(map(lambda x : x[0], rfc_top_correlates))
+            #print(f"HISTORICAL CORRELATES TO BE PLOTTED: {rfc_top_correlate_names}")
+            #print(df[rfc_top_correlate_names])
+            df_didnt_meet_cal_goal = df_og[df['met_cal_goal'] == False]
+            gm.make_and_save_historical_data_plots(df=df_didnt_meet_cal_goal,
+                                                   top_correlates=rfc_top_correlate_names,
+                                                   plot_name="rfc_historical_plot",
+                                                   dates_goal_missed_cols=df_didnt_meet_cal_goal['date'])
 
             handoff={
                 'rf_plot': rf_plot_base64,

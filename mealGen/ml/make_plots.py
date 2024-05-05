@@ -1,4 +1,4 @@
-# generates plots and saves them as base64 files
+# generates importance_plots and saves them as base64 files
 
 import matplotlib.pyplot as plt
 import os

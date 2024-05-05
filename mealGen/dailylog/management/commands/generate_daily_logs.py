@@ -28,7 +28,8 @@ class Command(BaseCommand):
         parser.add_argument('username', type=str, help='Username of valid and registered user.')
         parser.add_argument('days', type=int, help='Number of days of history that will be generated.')
         parser.add_argument('n_correlates', type=int, help='Number of features to correlate with target.')
-        parser.add_argument('p_miss_target', type=float, help='Probability (.25<p<.75) that a users miss their calorie target on a given day')
+        parser.add_argument('p_miss_target', type=float, help='Probability (.25<p<.75) that a users miss their calorie target on a given day.')
+        parser.add_argument('verbose', type=bool, default=False, help='Output Data for each day thats generated.')
 
     def handle(self, *args, **options):
         # setting passed-in args 
@@ -36,7 +37,8 @@ class Command(BaseCommand):
         days = options['days']
         n_correlates = options['n_correlates']
         p_miss_target = options['p_miss_target']
-        calorie_goal = None 
+        calorie_goal = None
+        verbose_output = options['verbose']
 
         try:
             user = User.objects.get(username=username)
@@ -59,7 +61,7 @@ class Command(BaseCommand):
         correlates = random.sample(features, n_correlates) 
         
         if len(correlates) > 0:
-            print(f"Correlates ({len(correlates)}): {correlates}")
+            self.stdout.write(self.style.SUCCESS(f"Correlates ({len(correlates)}): {correlates}\n"))
 
             # set scalar increases based on feature type (cal, fat, carb, protein, time)
             f_types = ['fat', 'carbs', 'protein', 'time']
@@ -80,11 +82,15 @@ class Command(BaseCommand):
 
         # loop from start date (given in arg to this command) to the current date 
         for cur_date in (start_date + timedelta(n) for n in range((end_date - start_date).days)):
+
             # init daily macro sums to zero
             macro_sums = {'fat': 0, 'carbs': 0, 'protein': 0}
 
             # if curdate is a day where the target is missed
             if random.uniform(0.0,1.0) <= p_miss_target:
+                # missed goal string for verbose output
+                miss_goal_str = "Y"
+
                 days_cal_goal_missed+=1
                 percent_increase = random.uniform(0.10, 0.5) # select a random amount to to increase by (percent wise) 
 
@@ -94,7 +100,8 @@ class Command(BaseCommand):
                         macro_sums[macro] = base_amount * (1 + percent_increase)
 
             else: 
-                # normal day 
+                # normal day
+                miss_goal_str = "N"
                 calories_per_meal = calorie_goal // 3
                 for macro in macro_sums:
                     if macro == 'fat': 
@@ -106,6 +113,10 @@ class Command(BaseCommand):
             # calc todays total calories
             todays_calories = sum(macro_sums[macro] * (4 if macro != 'fat' else 9) for macro in macro_sums)
             meal_calories = todays_calories // 3
+
+            # print to console if verbose==True
+            if verbose_output:
+                print(f"[{cur_date}] | MISS={miss_goal_str} | TOTAL DAILY CALORIES={int(todays_calories)}")
 
             # create the DailyLog entry
             DailyLog.objects.create(
@@ -129,8 +140,8 @@ class Command(BaseCommand):
             )
 
         self.stdout.write(self.style.SUCCESS(f"\nSuccessfully generated {days} days of logs for '{username}'."))
-        print(f"Correlate Types: {selected_types}")
-        print(f"P(TargetMissed)={p_miss_target}")
-        print(f"Days Calorie Goal Missed={days_cal_goal_missed}")
+        self.stdout.write(self.style.SUCCESS(f"Correlate Types: {selected_types}"))
+        self.stdout.write(self.style.SUCCESS(f"P(TargetMissed)={p_miss_target}"))
+        self.stdout.write(self.style.SUCCESS(f"Days Calorie Goal Missed={days_cal_goal_missed}"))
 
 

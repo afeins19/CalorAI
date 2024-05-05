@@ -19,6 +19,8 @@ class Command(BaseCommand):
             return
         
         # Delete all DailyLog entries for this user
-        DailyLog.objects.filter(user=user).delete()
+        logs = DailyLog.objects.filter(user=user)
+        log_count = len(logs)
+        logs.delete()
 
-        self.stdout.write(self.style.SUCCESS(f'Successfully cleared all daily logs for user "{username}"'))
+        self.stdout.write(self.style.SUCCESS(f'Successfully cleared {log_count} daily logs for user "{username}"'))
