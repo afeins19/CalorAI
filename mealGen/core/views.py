@@ -136,8 +136,8 @@ def model_results_view(request):
                 "feature_importances": [feature for feature, _ in xgb_ft_importances][:5],
                 "importance_values": [val for _, val in xgb_ft_importances][:5]}
             
-            print("RFCRFCRFC")
-            print(rfc_plot_data['feature_importances'])
+
+            print(f"RFC FEATURE IMPORTANCES={rfc_plot_data['feature_importances']}")
             
             rfc_path = gm.make_and_save_feature_importance_plots(
                 x_label=rfc_plot_data['importance_values'],
@@ -152,8 +152,6 @@ def model_results_view(request):
                 model_name='XGBoost',
                 file_path='static/importance_plots'
             )
-
-            print(f"RFC_PATH={rfc_path}")
 
             # convert importance_plots to b64
             rf_plot_base64 = gm.to_base64(rfc_path)

@@ -189,8 +189,25 @@ def to_base64(file_path):
 
 # uses correlates from a given model to show instances that contributed most to exceeding calorie goal
 # for now i will consider macro categories for features (carbs = breakfast_carbs + lunch_carbs + dinner_carbs, fat = breakfast_fat + ...)
-def make_and_save_historical_data_plots(df: pd.DataFrame, top_correlates, plot_name, x_label=None, y_label=None, dates_goal_missed_cols=None, file_path='static/history_plots/'):
+def make_and_save_historical_data_plots(df: pd.DataFrame, top_correlates, plot_name, x_label=None, y_label=None, dates_goal_missed_cols=None, file_path='static/history_plots/', n_days=10):
     print(f"\nGetting Historical Examples from Correlates...")
+    # n_days = number of days to display on the graph (10 by default unless df has less than 10 days)
+    if n_days >= len(df):
+        n_days=len(df)-1
+    else:
+        n_days -=1 # from 0 to n-1 days 
+
+
+    # sorting the df by the calorie differnece (days with the highest)
+    df_top_cal_diff_days = df.sort_values(by='calorie_diff', ascending=False)
+
+    # converting date col to pd datetime and sorting by the date from the top 10
+    df_top_cal_diff_days['date'] = pd.to_datetime(df_top_cal_diff_days['date']) 
+    df_top_cal_diff_days_by_date = df_top_cal_diff_days.sort_values(by='date')
+
+    # getting the top n_days 
+    df_top_cal_diff_days = df_top_cal_diff_days[:n_days]
+    print(f"TOP_10_BY_DATE:\n\n{df_top_cal_diff_days_by_date[:n_days]}\n\n")
 
     # for selecting macro cols
     f_types = ['fat', 'carbs', 'protein']
@@ -210,6 +227,9 @@ def make_and_save_historical_data_plots(df: pd.DataFrame, top_correlates, plot_n
     if len(dates_goal_missed_cols) > 0:
         df_macro_totals['date'] = dates_goal_missed_cols
 
+    # convert date col to datetime 
+    df_macro_totals['date'] = pd.to_datetime(df_macro_totals['date'])
+
     for macro in selected_macros:
         # get all rows for the selcted macro type
         df_macro_rows = df.filter(regex=macro+'$')
@@ -226,7 +246,7 @@ def make_and_save_historical_data_plots(df: pd.DataFrame, top_correlates, plot_n
     for macro in df_macro_totals.columns:
         plt.plot(df_macro_totals[macro], label=macro)
         print(f"\t[{macro} plotted...]")
-
+    
     # setup plot
     if not x_label:
         x_label = 'Date'
@@ -235,26 +255,29 @@ def make_and_save_historical_data_plots(df: pd.DataFrame, top_correlates, plot_n
 
     file_path = file_path + plot_name + '_history_plot.png'
 
-    # plotting
     fig, ax = plt.subplots(figsize=(10, 6))
 
     colors = ("orange", "skyblue", "limegreen")
+    
 
-    for macro, color in list(zip(selected_macros, colors)):
-        ax.bar(df_macro_totals['date'], df_macro_totals[macro+'_totals'], label=macro, color= color)
+    for macro, color in zip(selected_macros, colors):
+        ax.bar(df_macro_totals['date'], df_macro_totals[macro + '_totals'], label=macro, color=color)
 
-    # labels and title
+    # formatting date on x-axis
+    ax.xaxis.set_major_locator(mdates.DayLocator())  # tic for each day 
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))  # date format 
+
+    # make some rooooooooooom 
+    plt.xticks(rotation=45)
+    plt.tight_layout()  
+
+   
     ax.set_xlabel('Date')
     ax.set_ylabel('Total Macro Intake')
     ax.set_title('Daily Macro Intake on Days Calorie Goals Were Not Met')
     ax.legend()
 
-    # formatting the x-axis to show daily increments
-
-
-    # rotate date labels for better visibility
-    plt.xticks(rotation=45)
-    plt.tight_layout()  # make some roooooooooooooooom
+    plt.show()
 
     # saving...
     print("saving plots...")
