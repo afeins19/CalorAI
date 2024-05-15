@@ -197,7 +197,6 @@ def make_and_save_historical_data_plots(df: pd.DataFrame, top_correlates, plot_n
     else:
         n_days -=1 # from 0 to n-1 days 
 
-
     # sorting the df by the calorie differnece (days with the highest)
     df_top_cal_diff_days = df.sort_values(by='calorie_diff', ascending=False)
 
@@ -218,7 +217,6 @@ def make_and_save_historical_data_plots(df: pd.DataFrame, top_correlates, plot_n
 
     # see which types the selected features fall under
     selected_macros = list(set(re_types.findall(corr_str)))
-    selected_type_regex = ""
     print(f"Macro Types (will be summed daily)...{selected_macros}")
 
     df_macro_totals = pd.DataFrame(columns=[name+'_totals' for name in selected_macros]) # generating totals columns
@@ -231,7 +229,7 @@ def make_and_save_historical_data_plots(df: pd.DataFrame, top_correlates, plot_n
     df_macro_totals['date'] = pd.to_datetime(df_macro_totals['date'])
 
     for macro in selected_macros:
-        # get all rows for the selcted macro type
+        # get all rows for the selected macro type
         df_macro_rows = df.filter(regex=macro+'$')
         # sum over each column and make a new data frame
         row_sums = df_macro_rows.sum(axis=1)
@@ -259,7 +257,7 @@ def make_and_save_historical_data_plots(df: pd.DataFrame, top_correlates, plot_n
 
     colors = ("orange", "skyblue", "limegreen")
     
-
+    # pairs macro and color of its bar for display on graph
     for macro, color in zip(selected_macros, colors):
         ax.bar(df_macro_totals['date'], df_macro_totals[macro + '_totals'], label=macro, color=color)
 
@@ -269,8 +267,7 @@ def make_and_save_historical_data_plots(df: pd.DataFrame, top_correlates, plot_n
 
     # make some rooooooooooom 
     plt.xticks(rotation=45)
-    plt.tight_layout()  
-
+    plt.tight_layout()
    
     ax.set_xlabel('Date')
     ax.set_ylabel('Total Macro Intake')

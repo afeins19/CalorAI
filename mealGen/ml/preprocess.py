@@ -167,8 +167,7 @@ def preprocess_data(user_id=None):
             print(f"\t{col}")
         print(f"Total={len(df.columns)}\n")
         return df 
-    
-    
+
     return None 
 
 # run script as standalone 

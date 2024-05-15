@@ -166,7 +166,7 @@ def model_results_view(request):
             #print(f"HISTORICAL CORRELATES TO BE PLOTTED: {rfc_top_correlate_names}")
             #print(df[rfc_top_correlate_names])
             df_didnt_meet_cal_goal = df_og[df['met_cal_goal'] == False]
-            gm.make_and_save_historical_data_plots(df=df_didnt_meet_cal_goal,
+            rfc_importance_plot = gm.make_and_save_historical_data_plots(df=df_didnt_meet_cal_goal,
                                                    top_correlates=rfc_top_correlate_names,
                                                    plot_name="rfc_historical_plot",
                                                    dates_goal_missed_cols=df_didnt_meet_cal_goal['date'])
@@ -174,6 +174,7 @@ def model_results_view(request):
             handoff={
                 'rf_plot': rf_plot_base64,
                 'rf_importances' : random_forest_ft_importances[:5],
+                'rf_importance_plot' : gm.to_base64(rfc_importance_plot),
                 'rf_metrics' : random_forest_metrics,
                 'xgb_plot': xgb_plot_base64,
                 'xgb_importances' : xgb_ft_importances[:5],
