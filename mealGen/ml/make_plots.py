@@ -6,7 +6,7 @@ import base64
 
 # creates and saves a plot 
 def make_and_save_plot(x, y, title, model_name, filename):
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(10, 8))
     plt.plot(x, y, label=model_name)
     plt.title(title)
     plt.xlabel('X-axis Label')
