@@ -253,7 +253,7 @@ def make_and_save_historical_data_plots(df: pd.DataFrame, top_correlates, plot_n
 
     file_path = file_path + plot_name + '_history_plot.png'
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(20, 7))
 
     colors = ("orange", "skyblue", "limegreen")
     
@@ -262,12 +262,13 @@ def make_and_save_historical_data_plots(df: pd.DataFrame, top_correlates, plot_n
         ax.bar(df_macro_totals['date'], df_macro_totals[macro + '_totals'], label=macro, color=color)
 
     # formatting date on x-axis
+    plt.tick_params(axis='x', which='major', labelsize='7')
     ax.xaxis.set_major_locator(mdates.DayLocator())  # tic for each day 
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))  # date format 
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%d'))  # date format 
 
     # make some rooooooooooom 
     plt.xticks(rotation=45)
-    plt.tight_layout()
+    # plt.tight_layout()
    
     ax.set_xlabel('Date')
     ax.set_ylabel('Total Macro Intake')
